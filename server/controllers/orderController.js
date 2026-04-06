@@ -65,6 +65,16 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   if (order) {
     order.status = status || order.status;
     const updatedOrder = await order.save();
+
+    // Broadcast the status update to the user's specific room
+    const io = req.app.get('io');
+    if (io) {
+      io.to(updatedOrder.user.toString()).emit('orderStatusUpdated', {
+        orderId: updatedOrder._id,
+        status: updatedOrder.status,
+      });
+    }
+
     res.json(updatedOrder);
   } else {
     res.status(404);
