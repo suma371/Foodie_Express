@@ -39,7 +39,15 @@ const RestaurantMenu = () => {
         const mockRest = mockRestaurants.find(r => r._id === id);
         if (mockRest) {
           setRestaurant(mockRest);
-          setFoodItems(mockFoodItems[id] || []);
+          
+          // Provide generic food items if none exist for this specific mock restaurant ID
+          const fallbackItems = mockFoodItems[id] && mockFoodItems[id].length > 0 ? mockFoodItems[id] : [
+            { "_id": id + "f1", "name": "Chef's Special " + mockRest.name.split(' ')[0], "price": 399, "description": "Our signature dish prepared with the finest seasonal ingredients.", "category": "Special", "image": mockRest.image },
+            { "_id": id + "f2", "name": "Classic Side Portion", "price": 149, "description": "A perfect accompaniment to round off your main course.", "category": "Veg", "image": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=600" },
+            { "_id": id + "f3", "name": "Signature Dessert", "price": 199, "description": "Sweet conclusion to your meal.", "category": "Dessert", "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=600" }
+          ];
+          
+          setFoodItems(fallbackItems);
           setReviews([]);
         }
       } finally {
