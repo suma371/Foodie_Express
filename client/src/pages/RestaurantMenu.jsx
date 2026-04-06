@@ -5,6 +5,7 @@ import { ShoppingBag, Star, Plus, MapPin, Clock, Search, ChevronRight, Info } fr
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { mockRestaurants, mockFoodItems } from '../data/mockData';
 
 const RestaurantMenu = () => {
   const { id } = useParams();
@@ -25,13 +26,23 @@ const RestaurantMenu = () => {
           api.get(`/restaurants/${id}`),
           api.get(`/fooditems/restaurant/${id}`),
           api.get(`/restaurants/${id}/reviews`)
-        ]);
+        ]).catch(err => {
+          console.warn('API failed, attempting mock fallback...');
+          throw err;
+        });
         setRestaurant(restaurantRes.data);
         setFoodItems(foodRes.data);
-        setReviews(reviewRes.data);
-        setLoading(false);
+        setReviews(reviewRes.data || []);
       } catch (err) {
-        console.error('Error fetching restaurant menu:', err);
+        console.error('Error fetching restaurant menu, using mock data:', err);
+        // Fallback to mock data
+        const mockRest = mockRestaurants.find(r => r._id === id);
+        if (mockRest) {
+          setRestaurant(mockRest);
+          setFoodItems(mockFoodItems[id] || []);
+          setReviews([]);
+        }
+      } finally {
         setLoading(false);
       }
     };

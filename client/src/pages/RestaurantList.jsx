@@ -3,6 +3,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import RestaurantCard from '../components/restaurant/RestaurantCard';
+import { mockRestaurants } from '../data/mockData';
 
 const FILTERS = ['All', 'Rating 4.0+', 'Fast Delivery', 'Pure Veg', 'New'];
 const SORTS = ['relevance', 'rating', 'delivery_time'];
@@ -14,17 +15,18 @@ const RestaurantList = () => {
   const [activeFilter, setActiveFilter] = useState('All');
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchRestaurants = async () => {
       try {
         const { data } = await api.get('/restaurants');
-        setRestaurants(data);
+        setRestaurants(data && data.length > 0 ? data : mockRestaurants);
       } catch (err) {
-        console.error(err);
+        console.warn('API failed, using mock restaurants:', err);
+        setRestaurants(mockRestaurants);
       } finally {
         setLoading(false);
       }
     };
-    fetch();
+    fetchRestaurants();
   }, []);
 
   const filtered = restaurants.filter(r => {

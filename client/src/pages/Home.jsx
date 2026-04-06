@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ArrowRight, MapPin, ChevronDown, Flame, Star } from 'lucide-react';
+import { Search, ArrowRight, MapPin, ChevronDown, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import RestaurantCard from '../components/restaurant/RestaurantCard';
+import { mockRestaurants } from '../data/mockData';
 
 const categories = [
-  { name: 'Pizza', icon: '🍕', gradient: 'linear-gradient(to bottom, #ffedd5, #fff7ed)' },
-  { name: 'Burgers', icon: '🍔', gradient: 'linear-gradient(to bottom, #fef9c3, #fefce8)' },
-  { name: 'Sushi', icon: '🍣', gradient: 'linear-gradient(to bottom, #fee2e2, #fef2f2)' },
-  { name: 'Desserts', icon: '🧁', gradient: 'linear-gradient(to bottom, #fce7f3, #fdf2f8)' },
-  { name: 'Salads', icon: '🥗', gradient: 'linear-gradient(to bottom, #dcfce7, #f0fdf4)' },
-  { name: 'Biryani', icon: '🍛', gradient: 'linear-gradient(to bottom, #fef3c7, #fffbeb)' },
-  { name: 'Chinese', icon: '🥡', gradient: 'linear-gradient(to bottom, #fee2e2, #fff7ed)' },
-  { name: 'Drinks', icon: '🥤', gradient: 'linear-gradient(to bottom, #dbeafe, #eff6ff)' },
+  { name: 'Pizza', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200', gradient: '#ffedd5' },
+  { name: 'Burgers', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=200', gradient: '#fef9c3' },
+  { name: 'Sushi', image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&q=80&w=200', gradient: '#fee2e2' },
+  { name: 'Desserts', image: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=200', gradient: '#fce7f3' },
+  { name: 'Salads', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=200', gradient: '#dcfce7' },
+  { name: 'Biryani', image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&q=80&w=200', gradient: '#fef3c7' },
+  { name: 'Chinese', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200', gradient: '#fee2e2' },
+  { name: 'Tacos', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=200', gradient: '#e0f2fe' },
 ];
 
 const Home = () => {
@@ -25,9 +26,15 @@ const Home = () => {
     const fetchRestaurants = async () => {
       try {
         const { data } = await api.get('/restaurants');
-        setRestaurants(data.slice(0, 8));
+        if (data && data.length > 0) {
+          setRestaurants(data.slice(0, 8));
+        } else {
+          // Fallback if DB is empty
+          setRestaurants(mockRestaurants.slice(0, 8));
+        }
       } catch (err) {
-        console.error('Error fetching restaurants:', err);
+        console.error('Error fetching restaurants, using mock data:', err);
+        setRestaurants(mockRestaurants.slice(0, 8));
       } finally {
         setLoading(false);
       }
@@ -40,7 +47,6 @@ const Home = () => {
 
       {/* ── HERO SECTION ── */}
       <section className="hero-section">
-        {/* Background */}
         <div className="hero-bg">
           <img
             src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=2070"
@@ -60,28 +66,27 @@ const Home = () => {
             </h1>
             <p className="hero-subtitle">
               Discover the best food & drinks <br className="lg-only" />
-              delivered to your door 🚀
+              delivered early to your door 🚀
             </p>
           </motion.div>
 
-          {/* Zomato-style Search Bar */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
             className="search-pill"
           >
-            <div className="search-pill-location">
+            <div className="search-pill-location md-only">
               <MapPin className="pin-icon" size={20} />
               <input
                 className="location-input"
-                placeholder="Your location..."
+                placeholder="Downtown, New York"
               />
               <ChevronDown size={16} className="chevron-icon" />
-              <div className="vertical-divider lg-only" />
+              <div className="vertical-divider" />
             </div>
             <div className="search-pill-main">
-              <Search className="search-icon-dim" size={20} />
+              <Search className="search-icon-dim" size={20} style={{ color: '#999' }} />
               <input
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
@@ -96,25 +101,10 @@ const Home = () => {
               Search
             </Link>
           </motion.div>
-
-          {/* Popular tags */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="hero-popular-tags"
-          >
-            <span className="popular-label">Popular:</span>
-            {['Pizza', 'Biryani', 'Burgers', 'Sushi'].map(tag => (
-              <Link key={tag} to="/restaurants" className="tag-pill">
-                {tag}
-              </Link>
-            ))}
-          </motion.div>
         </div>
       </section>
 
-      {/* ── CATEGORIES (Swiggy Style horizontal scroll) ── */}
+      {/* ── CATEGORIES ── */}
       <section className="category-section">
         <div className="page-container">
           <h2 className="section-heading-small">
@@ -129,9 +119,9 @@ const Home = () => {
                 transition={{ delay: i * 0.05 }}
                 viewport={{ once: true }}
               >
-                <Link to="/restaurants" className="category-item group">
-                  <div className="category-circle" style={{ background: cat.gradient }}>
-                    {cat.icon}
+                <Link to="/restaurants" className="category-item">
+                  <div className="category-circle" style={{ backgroundColor: cat.gradient }}>
+                    <img src={cat.image} alt={cat.name} />
                   </div>
                   <span className="category-label">
                     {cat.name}
@@ -143,28 +133,19 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── FEATURED RESTAURANTS ── */}
+      {/* ── RESTAURANTS GRID ── */}
       <section className="featured-section">
         <div className="page-container">
           <div className="section-header">
             <div className="header-text-group">
-              <div className="label-row">
+              <div className="label-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#e23744' }}>
                 <Flame size={18} />
-                <span className="section-label">Top Picks</span>
+                <span className="section-label" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Top Rated</span>
               </div>
               <h2 className="section-title-large">
-                Order from top brands
+                Restaurants near you
               </h2>
-              <p className="section-description">
-                Curated selection of best-rated eateries near you
-              </p>
             </div>
-            <Link
-              to="/restaurants"
-              className="md-only see-all-link"
-            >
-              See all <ArrowRight size={16} />
-            </Link>
           </div>
 
           {loading ? (
@@ -177,7 +158,7 @@ const Home = () => {
                 </div>
               ))}
             </div>
-          ) : restaurants.length > 0 ? (
+          ) : (
             <div className="restaurant-grid">
               {restaurants.map((rest, i) => (
                 <motion.div
@@ -191,58 +172,7 @@ const Home = () => {
                 </motion.div>
               ))}
             </div>
-          ) : (
-            <div className="empty-restaurants-placeholder">
-              <p className="placeholder-icon">🍽️</p>
-              <p className="placeholder-title">No restaurants yet.</p>
-              <p className="placeholder-subtitle">Be the first to list your restaurant!</p>
-              <Link to="/register" className="btn btn-primary" style={{ marginTop: '1.5rem' }}>Get Started</Link>
-            </div>
           )}
-
-          <div className="md-hidden mobile-see-all">
-            <Link to="/restaurants" className="btn btn-outline" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>
-              See all restaurants <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── OFFER BANNER ── */}
-      <section className="offer-banner">
-        <div className="banner-glow-effects">
-          <div className="glow-point glow-top" />
-          <div className="glow-point glow-bottom" />
-        </div>
-        <div className="page-container banner-inner-content">
-          <div className="banner-text-side">
-            <div className="banner-main-area">
-              <span className="banner-tagline">Why FoodieExpress?</span>
-              <h2 className="banner-heading">
-                Feeding your cravings, <br />
-                <span>one click</span> at a time.
-              </h2>
-              <p className="banner-description">
-                Join thousands of foodies who trust FoodieExpress for their daily meals.
-              </p>
-              <Link to="/register" className="btn btn-primary banner-cta">
-                Join For Free <ArrowRight size={18} />
-              </Link>
-            </div>
-            <div className="stat-grid">
-              {[
-                { num: '500+', label: 'Restaurants' },
-                { num: '10k+', label: 'Daily Orders' },
-                { num: '4.8★', label: 'Avg. Rating' },
-                { num: '30min', label: 'Avg. Delivery' },
-              ].map(({ num, label }) => (
-                <div key={label} className="stat-card">
-                  <div className="stat-number">{num}</div>
-                  <div className="stat-label">{label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
     </div>

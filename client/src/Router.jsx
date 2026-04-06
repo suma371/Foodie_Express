@@ -8,6 +8,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
+import OrderTracking from './pages/OrderTracking';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminRoute from './components/auth/AdminRoute';
 
@@ -21,6 +22,7 @@ const Router = () => {
       <Route path="/restaurant/:id" element={<RestaurantMenu />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
+      <Route path="/order-tracking/:id" element={<OrderTracking />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/profile" element={<Profile />} />
       

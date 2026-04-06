@@ -1,0 +1,72 @@
+[
+  {
+    "name": "The Italian Crust",
+    "description": "Authentic wood-fired pizzas and homemade pastas with a touch of Mediterranean flavor.",
+    "address": "42 Pizza Lane, Downtown",
+    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.8
+  },
+  {
+    "name": "Spicy Masala",
+    "description": "True taste of North Indian Mughlai cuisine with rich gravies and tandoori delights.",
+    "address": "15 Curry Street, Old Town",
+    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.5
+  },
+  {
+    "name": "Sushi Zen",
+    "description": "Premium sushi, sashimi, and Ramen served in a minimalist, peaceful atmosphere.",
+    "address": "8 Sakura Road, Business District",
+    "image": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.9
+  },
+  {
+    "name": "Burger Haven",
+    "description": "Juicy, artisanal burgers with craft toppings and hand-cut fries.",
+    "address": "22 Grill Avenue, Westside",
+    "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.3
+  },
+  {
+    "name": "Healthy BOWL",
+    "description": "Fresh salads, quinoa bowls, and smoothies for the health-conscious foodie.",
+    "address": "5 Green Street, Uptown",
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.6
+  },
+  {
+    "name": "Taco Fiesta",
+    "description": "Vibrant Mexican street food, from spicy tacos to loaded nachos and burritos.",
+    "address": "33 Sombrero Way, City Center",
+    "image": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.4
+  },
+  {
+    "name": "Sweet Delights Bakery",
+    "description": "Exquisite pastries, customized cakes, and artisanal breads baked daily.",
+    "address": "12 Sugar Lane, Riverside",
+    "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.7
+  },
+  {
+    "name": "The Wok Station",
+    "description": "Fast and flavorful Pan-Asian stir-fries and dim sums.",
+    "address": "55 Orient Boulevard, Northside",
+    "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=2066&auto=format&fit=crop",
+    "rating": 4.2
+  },
+  {
+    "name": "Ocean Catch Seafood",
+    "description": "Freshly caught seafood prepared with Mediterranean and local spices.",
+    "address": "9 Harbor View, Marina",
+    "image": "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&w=2074&auto=format&fit=crop",
+    "rating": 4.6
+  },
+  {
+    "name": "South Spice",
+    "description": "Authentic South Indian breakfast and meals served on traditional plates.",
+    "address": "7 Temple Road, Southern Cross",
+    "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.8
+  }
+]
