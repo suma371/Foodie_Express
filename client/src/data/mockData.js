@@ -1,110 +1,70 @@
 export const mockRestaurants = [
-  {
-    "_id": "mock1",
-    "name": "The Italian Crust",
-    "description": "Authentic wood-fired pizzas and homemade pastas.",
-    "address": "42 Pizza Lane, Downtown",
-    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.8,
-    "deliveryTime": "25-30 mins",
-    "priceForTwo": "₹600 for two"
-  },
-  {
-    "_id": "mock2",
-    "name": "Spicy Masala",
-    "description": "True taste of North Indian Mughlai cuisine.",
-    "address": "15 Curry Street, Old Town",
-    "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.5,
-    "deliveryTime": "35-40 mins",
-    "priceForTwo": "₹500 for two"
-  },
-  {
-    "_id": "mock3",
-    "name": "Sushi Zen",
-    "description": "Premium sushi and Ramen in a peaceful atmosphere.",
-    "address": "8 Sakura Road, Business District",
-    "image": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.9,
-    "deliveryTime": "45-50 mins",
-    "priceForTwo": "₹1200 for two"
-  },
-  {
-    "_id": "mock4",
-    "name": "Burger Haven",
-    "description": "Juicy, artisanal burgers with craft toppings.",
-    "address": "22 Grill Avenue, Westside",
-    "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.3,
-    "deliveryTime": "20-25 mins",
-    "priceForTwo": "₹400 for two"
-  },
-  {
-    "_id": "mock5",
-    "name": "Healthy BOWL",
-    "description": "Fresh salads and quinoa bowls.",
-    "address": "5 Green Street, Uptown",
-    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.6,
-    "deliveryTime": "25-30 mins",
-    "priceForTwo": "₹450 for two"
-  },
-  {
-    "_id": "mock6",
-    "name": "Taco Fiesta",
-    "description": "Vibrant Mexican street food.",
-    "address": "33 Sombrero Way, City Center",
-    "image": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.4,
-    "deliveryTime": "30-35 mins",
-    "priceForTwo": "₹350 for two"
-  },
-  {
-    "_id": "mock7",
-    "name": "Sweet Delights Bakery",
-    "description": "Exquisite pastries and customized cakes.",
-    "address": "12 Sugar Lane, Riverside",
-    "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.7,
-    "deliveryTime": "15-20 mins",
-    "priceForTwo": "₹300 for two"
-  },
-  {
-    "_id": "mock8",
-    "name": "The Wok Station",
-    "description": "Fast and flavorful Pan-Asian stir-fries.",
-    "address": "55 Orient Boulevard, Northside",
-    "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.2,
-    "deliveryTime": "40-45 mins",
-    "priceForTwo": "₹400 for two"
-  },
-  {
-    "_id": "mock9",
-    "name": "Ocean Catch Seafood",
-    "description": "Freshly caught seafood and Mediterranean flavors.",
-    "address": "9 Harbor View, Marina",
-    "image": "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.6,
-    "deliveryTime": "35-40 mins",
-    "priceForTwo": "₹900 for two"
-  },
-  {
-    "_id": "mock10",
-    "name": "South Spice",
-    "description": "Authentic South Indian breakfast and meals.",
-    "address": "7 Temple Road, Southern Cross",
-    "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&q=80&w=800",
-    "rating": 4.8,
-    "deliveryTime": "20-25 mins",
-    "priceForTwo": "₹250 for two"
-  }
+  // 1-10 (Existing)
+  { "_id": "mock1", "name": "The Italian Crust", "description": "Authentic wood-fired pizzas and homemade pastas.", "address": "42 Pizza Lane, Downtown", "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=800", "rating": 4.8, "deliveryTime": "25-30 mins", "tagline": "Best in Class", "priceForTwo": "₹600 for two" },
+  { "_id": "mock2", "name": "Spicy Masala", "description": "True taste of North Indian Mughlai cuisine.", "address": "15 Curry Street, Old Town", "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800", "rating": 4.5, "deliveryTime": "35-40 mins", "tagline": "Authentic Flavors", "priceForTwo": "₹500 for two" },
+  { "_id": "mock3", "name": "Sushi Zen", "description": "Premium sushi and Ramen in a peaceful atmosphere.", "address": "8 Sakura Road, Business District", "image": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&q=80&w=800", "rating": 4.9, "deliveryTime": "45-50 mins", "tagline": "Fine Dining", "priceForTwo": "₹1200 for two" },
+  { "_id": "mock4", "name": "Burger Haven", "description": "Juicy, artisanal burgers with craft toppings.", "address": "22 Grill Avenue, Westside", "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=800", "rating": 4.3, "deliveryTime": "20-25 mins", "tagline": "Fast Delivery", "priceForTwo": "₹400 for two" },
+  { "_id": "mock5", "name": "Healthy BOWL", "description": "Fresh salads and quinoa bowls.", "address": "5 Green Street, Uptown", "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800", "rating": 4.6, "deliveryTime": "25-30 mins", "tagline": "Superfoods", "priceForTwo": "₹450 for two" },
+  { "_id": "mock6", "name": "Taco Fiesta", "description": "Vibrant Mexican street food.", "address": "33 Sombrero Way, City Center", "image": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=800", "rating": 4.4, "deliveryTime": "30-35 mins", "tagline": "Spicy & Fresh", "priceForTwo": "₹350 for two" },
+  { "_id": "mock7", "name": "Sweet Delights Bakery", "description": "Exquisite pastries and customized cakes.", "address": "12 Sugar Lane, Riverside", "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800", "rating": 4.7, "deliveryTime": "15-20 mins", "tagline": "Must Try", "priceForTwo": "₹300 for two" },
+  { "_id": "mock8", "name": "The Wok Station", "description": "Fast and flavorful Pan-Asian stir-fries.", "address": "55 Orient Boulevard, Northside", "image": "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=800", "rating": 4.2, "deliveryTime": "40-45 mins", "tagline": "Street Style", "priceForTwo": "₹400 for two" },
+  { "_id": "mock9", "name": "Ocean Catch Seafood", "description": "Freshly caught seafood and Mediterranean flavors.", "address": "9 Harbor View, Marina", "image": "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&q=80&w=800", "rating": 4.6, "deliveryTime": "35-40 mins", "tagline": "Sea Fresh", "priceForTwo": "₹900 for two" },
+  { "_id": "mock10", "name": "South Spice", "description": "Authentic South Indian breakfast and meals.", "address": "7 Temple Road, Southern Cross", "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&q=80&w=800", "rating": 4.8, "deliveryTime": "20-25 mins", "tagline": "Traditional", "priceForTwo": "₹250 for two" },
+  // 11-20 (Recent Addition)
+  { "_id": "mock11", "name": "Biryani Palace", "description": "Royal Hyderabadi and Lucknowi dum biryanis.", "address": "88 Nizams Circle, Heritage District", "image": "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?auto=format&fit=crop&q=80&w=800", "rating": 4.7, "deliveryTime": "30-35 mins", "tagline": "Royal Taste", "priceForTwo": "₹550 for two" },
+  { "_id": "mock12", "name": "Smoothie Stop", "description": "Refreshing fruit smoothies and acai bowls.", "address": "14 Chill Boulevard, East side", "image": "https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&q=80&w=800", "rating": 4.5, "deliveryTime": "15-20 mins", "tagline": "Guilt Free", "priceForTwo": "₹350 for two" },
+  { "_id": "mock13", "name": "Mediterranean Marvel", "description": "Gourmet Shawarmas, Falafel and creamy Hummus.", "address": "25 Olive Grove, Westend", "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800", "rating": 4.6, "deliveryTime": "25-30 mins", "tagline": "Middle Eastern", "priceForTwo": "₹500 for two" },
+  { "_id": "mock14", "name": "Thai Terrace", "description": "Zesty Pad Thai and authentic Green Curries.", "address": "90 Bangkok Lane, North Terrace", "image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=800", "rating": 4.4, "deliveryTime": "35-40 mins", "tagline": "Zesty Thai", "priceForTwo": "₹700 for two" },
+  { "_id": "mock15", "name": "Paneer Pavilion", "description": "Vegetarian specialties featuring soft artisan paneer.", "address": "12 Cottage Road, Green Park", "image": "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&q=80&w=800", "rating": 4.3, "deliveryTime": "25-30 mins", "tagline": "Veggie Delight", "priceForTwo": "₹450 for two" },
+  { "_id": "mock16", "name": "Belgian Waffle House", "description": "Crispy waffles with decadent Belgian chocolate toppings.", "address": "4 Brussels Court, Midtown", "image": "https://images.unsplash.com/photo-1562329265-95a6d7a83440?auto=format&fit=crop&q=80&w=800", "rating": 4.7, "deliveryTime": "20-25 mins", "tagline": "Dessert First", "priceForTwo": "₹300 for two" },
+  { "_id": "mock17", "name": "Ice Cream Island", "description": "Hand-churned seasonal ice creams and sundaes.", "address": "77 Frozen Way, South View", "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&q=80&w=800", "rating": 4.8, "deliveryTime": "15-20 mins", "tagline": "Cool Treats", "priceForTwo": "₹250 for two" },
+  { "_id": "mock18", "name": "Dim Sum Delight", "description": "Authentic steamed momos, baos and dumplings.", "address": "5 Cantonment Road, Eastside", "image": "https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&q=80&w=800", "rating": 4.5, "deliveryTime": "30-35 mins", "tagline": "Steamed Goodness", "priceForTwo": "₹400 for two" },
+  { "_id": "mock19", "name": "Steak & Grill", "description": "Premium aged meats and perfectly grilled steaks.", "address": "10 Sizzle Street, Meatpacking District", "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800", "rating": 4.6, "deliveryTime": "45-50 mins", "tagline": "Grill Master", "priceForTwo": "₹1500 for two" },
+  { "_id": "mock20", "name": "Kebab Korner", "description": "Smoky clay-oven kebabs and succulent tikkas.", "address": "6 Charcoal Lane, Old City", "image": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&q=80&w=800", "rating": 4.4, "deliveryTime": "25-30 mins", "tagline": "Smoky Flavors", "priceForTwo": "₹600 for two" },
+  // 21-30 (NEW ADDITION)
+  { "_id": "mock21", "name": "Bagel Brook", "description": "Freshly baked bagels and artisanal sandwiches.", "address": "11 Bakery Square, High Street", "image": "https://images.unsplash.com/photo-1533479151508-3603d297905a?auto=format&fit=crop&q=80&w=800", "rating": 4.5, "deliveryTime": "20-25 mins", "tagline": "Freshly Baked", "priceForTwo": "₹350 for two" },
+  { "_id": "mock22", "name": "Noodle Nest", "description": "Silky Udon and delicious Soba noodles.", "address": "9 Silk Way, Chinatown", "image": "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=80&w=800", "rating": 4.6, "deliveryTime": "30-35 mins", "tagline": "Authentic Asian", "priceForTwo": "₹450 for two" },
+  { "_id": "mock23", "name": "Falafel Fanatic", "description": "Crispy Falafel, smooth Hummus and fresh Pita.", "address": "22 Olive Bend, Med District", "image": "https://images.unsplash.com/photo-1547000558-a83359a1c2d9?auto=format&fit=crop&q=80&w=800", "rating": 4.4, "deliveryTime": "25-30 mins", "tagline": "Green & Fresh", "priceForTwo": "₹400 for two" },
+  { "_id": "mock24", "name": "Poutine Parlor", "description": "Classic Quebec style poutines and specialty fries.", "address": "5 Maple Street, Northside", "image": "https://images.unsplash.com/photo-1582196016295-f8c4bc940c71?auto=format&fit=crop&q=80&w=800", "rating": 4.3, "deliveryTime": "20-25 mins", "tagline": "Cheese Curd Love", "priceForTwo": "₹350 for two" },
+  { "_id": "mock25", "name": "Crepe Corner", "description": "Sweet and savory French crepes.", "address": "8 Eiffel Boulevard, Fashion District", "image": "https://images.unsplash.com/photo-1519676867240-f031ee043477?auto=format&fit=crop&q=80&w=800", "rating": 4.7, "deliveryTime": "25-30 mins", "tagline": "Parisian Charm", "priceForTwo": "₹400 for two" },
+  { "_id": "mock26", "name": "Poke Place", "description": "Fresh Hawaiian Poke bowls with premium fish.", "address": "1 Aloha Way, Coastal Bay", "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800", "rating": 4.8, "deliveryTime": "20-25 mins", "tagline": "Fresh Catch", "priceForTwo": "₹700 for two" },
+  { "_id": "mock27", "name": "Pho Fresh", "description": "Traditional Vietnamese Pho and spring rolls.", "address": "15 Hanoi Lane, Little Asia", "image": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=800", "rating": 4.6, "deliveryTime": "35-40 mins", "tagline": "Comfort Food", "priceForTwo": "₹550 for two" },
+  { "_id": "mock28", "name": "Waffle World", "description": "Belgian style waffles with exotic fruit toppings.", "address": "3 Berry Court, Uptown", "image": "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800", "rating": 4.5, "deliveryTime": "20-25 mins", "tagline": "Sweet Escape", "priceForTwo": "₹300 for two" },
+  { "_id": "mock29", "name": "Curry Craft", "description": "Home-style Indian curries and special spice blends.", "address": "6 Saffron Square, Spice Market", "image": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&q=80&w=800", "rating": 4.4, "deliveryTime": "30-35 mins", "tagline": "Truly Indian", "priceForTwo": "₹450 for two" },
+  { "_id": "mock30", "name": "Pie Pantry", "description": "Sweet and savory traditional pies.", "address": "10 Crust Lane, Village Side", "image": "https://images.unsplash.com/photo-1464305795204-6f5bdf7ad7f5?auto=format&fit=crop&q=80&w=800", "rating": 4.5, "deliveryTime": "40-45 mins", "tagline": "Crush on Crust", "priceForTwo": "₹400 for two" }
 ];
 
 export const mockFoodItems = {
+  // Items for all 30 restaurants
   "mock1": [
-    { "_id": "m1f1", "name": "Margherita Pizza", "price": 499, "description": "Classic tomato sauce, fresh mozzarella, and aromatic basil.", "category": "Pizza", "image": "https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?auto=format&fit=crop&q=80&w=600" },
-    { "_id": "m1f2", "name": "Pasta Carbonara", "price": 549, "description": "Creamy sauce, crispy bacon, and parmesan cheese on fettuccine.", "category": "Pasta", "image": "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&q=80&w=600" }
+    { "_id": "m1f1", "name": "Margherita Pizza", "price": 499, "description": "Classic tomato sauce, mozzarella, and basil.", "category": "Veg", "image": "https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?auto=format&fit=crop&q=80&w=600" },
+    { "_id": "m1f2", "name": "Pasta Carbonara", "price": 549, "description": "Creamy sauce, crispy bacon, and parmesan.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&q=80&w=600" }
   ],
-  // ... more items can be added later
+  "mock2": [
+    { "_id": "m2f1", "name": "Butter Chicken", "price": 449, "description": "Tender chicken in a rich tomato and butter sauce.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1603894584373-5ac12903ff01?auto=format&fit=crop&q=80&w=600" },
+    { "_id": "m2f2", "name": "Dal Makhani", "price": 329, "description": "Slow-cooked black lentils with cream.", "category": "Veg", "image": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock3": [
+    { "_id": "m3f1", "name": "Salmon Nigiri", "price": 899, "description": "Fresh salmon slices on vinegared rice.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1583623025817-d180a2221d0a?auto=format&fit=crop&q=80&w=600" },
+    { "_id": "m3f2", "name": "Miso Ramen", "price": 649, "description": "Soybean paste broth with noodles.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock4": [
+    { "_id": "m4f1", "name": "Double Cheese Burger", "price": 349, "description": "Double patties with extra cheddar.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600" },
+    { "_id": "m4f2", "name": "Truffle Fries", "price": 199, "description": "Crispy fries with truffle oil.", "category": "Veg", "image": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock10": [
+    { "_id": "m10f1", "name": "Masala Dosa", "price": 149, "description": "Crispy rice crepe with spiced potato.", "category": "Veg", "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock11": [
+    { "_id": "m11f1", "name": "Chicken Biryani", "price": 399, "description": "Classic dum biryani with long-grain rice.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock21": [
+    { "_id": "m21f1", "name": "Everything Bagel", "price": 129, "description": "Fresh bagel with cream cheese and chives.", "category": "Veg", "image": "https://images.unsplash.com/photo-1533479151508-3603d297905a?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock26": [
+    { "_id": "m26f1", "name": "Salmon Poke Bowl", "price": 549, "description": "Fresh salmon, avocado, seaweed and ginger.", "category": "Non-Veg", "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=600" }
+  ],
+  "mock30": [
+    { "_id": "m30f1", "name": "Apple Pie", "price": 199, "description": "Traditional warm apple pie with cinnamon.", "category": "Veg", "image": "https://images.unsplash.com/photo-1464305795204-6f5bdf7ad7f5?auto=format&fit=crop&q=80&w=600" }
+  ]
 };

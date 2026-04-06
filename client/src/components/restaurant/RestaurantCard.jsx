@@ -38,8 +38,22 @@ const RestaurantCard = ({ restaurant }) => {
         </p>
 
         <div className="card-footer-safety">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ color: '#16a34a', fontWeight: 600 }}>FREE DELIVERY</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            {restaurant.tagline && (
+              <span style={{ 
+                background: '#fef2f2', 
+                color: '#e23744', 
+                padding: '2px 8px', 
+                borderRadius: '4px', 
+                fontSize: '0.65rem', 
+                fontWeight: '800', 
+                letterSpacing: '0.05em', 
+                textTransform: 'uppercase' 
+              }}>
+                {restaurant.tagline}
+              </span>
+            )}
+            <span style={{ color: '#16a34a', fontWeight: '700', fontSize: '0.75rem' }}>FREE DELIVERY</span>
           </div>
         </div>
       </div>
