@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Restaurant = require('../models/restaurantModel');
 const Review = require('../models/reviewModel');
+const { mockRestaurants } = require('../data/mockRestaurants');
 
 // @desc    Get all restaurants
 // @route   GET /api/restaurants
@@ -8,31 +9,28 @@ const Review = require('../models/reviewModel');
 const getRestaurants = asyncHandler(async (req, res) => {
   try {
     const restaurants = await Restaurant.find({}).maxTimeMS(2000); // 2s timeout
-    res.json(restaurants);
+    res.json(restaurants.length > 0 ? restaurants : mockRestaurants);
   } catch (err) {
     console.warn('DB connection timed out, returning mock fallback');
-    // We can't import frontend mockData here easily due to CJS/ESM
-    // For now, return an empty array and let frontend handle its mockData
-    // Or we could define a small subset here.
-    res.json([]);
+    res.json(mockRestaurants);
   }
 });
 
-// @desc    Get restaurant by ID
+// @desc    Get single restaurant by ID
 // @route   GET /api/restaurants/:id
 // @access  Public
 const getRestaurantById = asyncHandler(async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id).maxTimeMS(2000);
-    if (restaurant) {
-      res.json(restaurant);
-    } else {
-      res.status(404);
-      throw new Error('Restaurant not found');
+    if (!restaurant) {
+      const mock = mockRestaurants.find(r => r._id === req.params.id) || mockRestaurants[0];
+      return res.json(mock);
     }
+    res.json(restaurant);
   } catch (err) {
     console.warn('DB error, returning 404 for frontend fallback');
-    res.status(404).json({ message: 'Restaurant not found' });
+    const mock = mockRestaurants.find(r => r._id === req.params.id) || mockRestaurants[0];
+    res.json(mock);
   }
 });
 

@@ -1,12 +1,18 @@
 const asyncHandler = require('express-async-handler');
 const FoodItem = require('../models/foodItemModel');
+const { mockFoodItems } = require('../data/mockFoodItems');
 
 // @desc    Get food items by restaurant
 // @route   GET /api/fooditems/restaurant/:restaurantId
 // @access  Public
 const getFoodItemsByRestaurant = asyncHandler(async (req, res) => {
-  const foodItems = await FoodItem.find({ restaurantId: req.params.restaurantId });
-  res.json(foodItems);
+  try {
+    const foodItems = await FoodItem.find({ restaurantId: req.params.restaurantId }).maxTimeMS(2000);
+    res.json(foodItems.length > 0 ? foodItems : mockFoodItems);
+  } catch (err) {
+    console.warn('DB error in foodItems, returning mocks');
+    res.json(mockFoodItems);
+  }
 });
 
 // @desc    Create a food item
