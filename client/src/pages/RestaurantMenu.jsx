@@ -1,53 +1,33 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useCartContext } from '../context/CartContext';
-import { ShoppingBag, Star, Plus, MapPin, Clock, Search, ChevronRight, Info } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
-import { mockRestaurants, mockFoodItems } from '../data/mockData';
+import { Star, Clock, Search, MapPin, ChevronRight, Share2, Info, ChevronDown, Plus, Minus, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const RestaurantMenu = () => {
   const { id } = useParams();
+  const { addToCart, cartItems, updateQuantity } = useCartContext();
   const [restaurant, setRestaurant] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState([]);
-  const [rating, setRating] = useState(0);
-  const [vegOnly, setVegOnly] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [comment, setComment] = useState('');
-  const [submittingReview, setSubmittingReview] = useState(false);
-  
-  const { addToCart } = useCartContext();
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isVegOnly, setIsVegOnly ] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [restaurantRes, foodRes, reviewRes] = await Promise.all([
+        const [resRes, foodRes] = await Promise.all([
           api.get(`/restaurants/${id}`),
-          api.get(`/fooditems/restaurant/${id}`),
-          api.get(`/restaurants/${id}/reviews`)
-        ]).catch(err => {
-          console.warn('API failed, attempting mock fallback...');
-          throw err;
-        });
-        setRestaurant(restaurantRes.data);
+          api.get(`/fooditems/restaurant/${id}`)
+        ]);
+        setRestaurant(resRes.data);
         setFoodItems(foodRes.data);
-        setReviews(reviewRes.data || []);
       } catch (err) {
-        console.error('Error fetching restaurant menu, using mock data:', err);
-        const mockRest = mockRestaurants.find(r => r._id === id);
-        if (mockRest) {
-          setRestaurant(mockRest);
-          const fallbackItems = mockFoodItems[id] && mockFoodItems[id].length > 0 ? mockFoodItems[id] : [
-            { "_id": id + "f1", "name": "Chef's Special " + mockRest.name.split(' ')[0], "price": 399, "description": "Our signature dish prepared with the finest seasonal ingredients.", "category": "Special", "image": mockRest.image },
-            { "_id": id + "f2", "name": "Classic Side Portion", "price": 149, "description": "A perfect accompaniment to round off your main course.", "category": "Veg", "image": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=600" },
-            { "_id": id + "f3", "name": "Signature Dessert", "price": 199, "description": "Sweet conclusion to your meal.", "category": "Dessert", "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=600" }
-          ];
-          setFoodItems(fallbackItems);
-          setReviews([]);
-        }
+        console.error('Menu fetch failed:', err);
+        // Fallback or Mock data can be injected here if needed
       } finally {
         setLoading(false);
       }
@@ -55,321 +35,204 @@ const RestaurantMenu = () => {
     fetchData();
   }, [id]);
 
-  const handleAddToCart = (food) => {
-    addToCart(food);
-    toast.success(`${food.name} added to cart!`);
-  };
+  const categories = ['All', ...new Set(foodItems.map(item => item.category))];
 
   const filteredItems = foodItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesVeg = vegOnly ? item.category === 'Veg' : true;
-    return matchesSearch && matchesVeg;
+    const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesVeg = !isVegOnly || item.isVeg;
+    return matchesCategory && matchesSearch && matchesVeg;
   });
 
-  const submitReviewHandler = async (e) => {
-    e.preventDefault();
-    if (rating === 0) {
-      toast.error('Please select a rating');
-      return;
-    }
-
-    try {
-      setSubmittingReview(true);
-      await api.post(`/restaurants/${id}/reviews`, { rating, comment });
-      toast.success('Review submitted successfully!');
-      
-      const [reviewRes, restaurantRes] = await Promise.all([
-        api.get(`/restaurants/${id}/reviews`),
-        api.get(`/restaurants/${id}`)
-      ]);
-      setReviews(reviewRes.data);
-      setRestaurant(restaurantRes.data);
-      
-      setRating(0);
-      setComment('');
-      setSubmittingReview(false);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to submit review');
-      setSubmittingReview(false);
-    }
+  const getItemCount = (itemId) => {
+    const item = cartItems.find(i => i._id === itemId);
+    return item ? item.quantity : 0;
   };
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-        <div className="loading-spinner"></div>
-      </div>
-    );
-  }
+  const menuSections = categories.map(cat => ({
+    title: cat,
+    items: filteredItems.filter(i => cat === 'All' ? true : i.category === cat)
+  }));
 
-  if (!restaurant) return <div>Restaurant not found</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-white flex-col gap-6">
+       <Loader2 className="animate-spin text-primary" size={48} />
+       <p className="text-sm font-black text-dark text-[10px] uppercase tracking-[0.4em]">Cooking your menu...</p>
+    </div>
+  );
+
+  if (!restaurant && !loading) return <div className="p-20 text-center">Restaurant not found</div>;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white min-h-screen">
+      
       {/* Breadcrumbs */}
-      <div className="page-container" style={{ padding: '1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-         <Link to="/" style={{ color: '#94a3b8', textDecoration: 'none' }}>Home</Link>
+      <div className="max-w-[800px] mx-auto pt-8 px-4 flex items-center gap-2 text-[10px] font-extrabold text-dark-light uppercase tracking-widest">
+         <Link to="/" className="hover:text-dark">Home</Link>
          <ChevronRight size={12} />
-         <span style={{ color: '#94a3b8' }}>Mumbai</span>
+         <Link to="/restaurants" className="hover:text-dark">{restaurant?.address?.city || 'Mumbai'}</Link>
          <ChevronRight size={12} />
-         <span style={{ color: '#0f172a' }}>{restaurant.name}</span>
+         <span className="text-dark-muted">{restaurant?.name}</span>
       </div>
 
-      <div className="page-container">
+      <div className="max-w-[800px] mx-auto pb-32 pt-10 px-4">
         
-        {/* Premium Restaurant Header */}
-        <header className="menu-header-premium">
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', justifyContent: 'space-between', alignItems: 'flex-start' }} className="md-flex-row">
-              <div style={{ flex: 1 }}>
-                 <h1 className="results-title" style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{restaurant.name}</h1>
-                 <p style={{ color: '#64748b', fontWeight: '500', marginBottom: '1rem' }}>North Indian, Chinese, Continental</p>
-                 <p style={{ color: '#94a3b8', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <MapPin size={14} /> {restaurant.address}
-                 </p>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                 <div className="white-card" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '1rem', minWidth: '80px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#15803d', fontWeight: '900', fontSize: '18px' }}>
-                       {restaurant.rating?.toFixed(1) || '0.0'} <Star size={16} style={{ fill: 'currentColor' }} />
-                    </div>
-                    <div style={{ height: '1px', width: '100%', backgroundColor: '#f1f5f9', margin: '0.5rem 0' }}></div>
-                    <div style={{ fontSize: '10px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.025em' }}>
-                       {reviews.length}+ <br/> Ratings
-                    </div>
-                 </div>
-                 <div className="white-card" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '1rem', minWidth: '80px' }}>
-                    <div style={{ color: '#0f172a', fontWeight: '900', fontSize: '18px', textAlign: 'center' }}>
-                       35
-                    </div>
-                    <div style={{ height: '1px', width: '100%', backgroundColor: '#f1f5f9', margin: '0.5rem 0' }}></div>
-                    <div style={{ fontSize: '10px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.025em' }}>
-                       Mins <br/> Delivery
-                    </div>
+        {/* Restaurant Profile Header (Swiggy Style) */}
+        <div className="mb-14">
+           <div className="flex justify-between items-start mb-6">
+              <div>
+                 <h1 className="text-3xl font-black text-dark tracking-tighter uppercase italic mb-2 leading-none">{restaurant?.name}</h1>
+                 <p className="text-sm font-bold text-dark-muted italic">{restaurant?.cuisines?.join(', ')}</p>
+                 <div className="flex items-center gap-2 text-xs font-bold text-dark-muted mt-2">
+                    <MapPin size={14} className="text-primary" />
+                    <span>{restaurant?.address?.city}, 1.2 km</span>
                  </div>
               </div>
+              <div className="border border-gray-100 rounded-[1.5rem] p-3 text-center shadow-sm flex flex-col items-center">
+                 <div className="flex items-center gap-1.5 text-success font-black border-b border-gray-50 pb-2 mb-2 w-full justify-center">
+                    <Star size={18} fill="currentColor" />
+                    <span className="text-base">{restaurant?.rating || '4.2'}</span>
+                 </div>
+                 <span className="text-[10px] font-black text-dark-muted uppercase tracking-tighter">10K+ ratings</span>
+              </div>
            </div>
 
-           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1.5rem', padding: '1rem 1.5rem', backgroundColor: '#f8fafc', borderRadius: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#475569', fontWeight: '700', fontSize: '14px' }}>
-                 <Clock size={18} style={{ color: '#94a3b8' }} />
-                 <span>Delivery in 25-30 mins</span>
+           <div className="flex items-center gap-6 py-4 border-t border-dashed border-gray-200">
+              <div className="flex items-center gap-3 font-black text-xs text-dark tracking-tighter uppercase italic">
+                 <div className="w-6 h-6 rounded-full bg-dark text-white flex items-center justify-center"><Clock size={12} /></div>
+                 <span>30 MINS</span>
               </div>
-              <div style={{ height: '1rem', width: '1px', backgroundColor: '#cbd5e1' }}></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#475569', fontWeight: '700', fontSize: '14px' }}>
-                 <Info size={18} style={{ color: '#94a3b8' }} />
-                 <span>Free delivery on orders above ₹500</span>
+              <div className="flex items-center gap-3 font-black text-xs text-dark tracking-tighter uppercase italic">
+                 <div className="w-6 h-6 rounded-full bg-dark text-white flex items-center justify-center font-serif text-[10px]">₹</div>
+                 <span>₹400 FOR TWO</span>
               </div>
            </div>
-        </header>
 
-        {/* Filters and Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', margin: '2rem 0', padding: '1rem 0', borderBottom: '1px solid #f1f5f9' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={() => setVegOnly(!vegOnly)}>
-              <div style={{ 
-                 width: '40px', height: '20px', borderRadius: '20px', backgroundColor: vegOnly ? '#16a34a' : '#e2e8f0', 
-                 position: 'relative', transition: 'background-color 0.2s' 
-              }}>
-                 <div style={{ 
-                    position: 'absolute', top: '2px', left: vegOnly ? '22px' : '2px', width: '16px', height: '16px', 
-                    borderRadius: '50%', backgroundColor: 'white', transition: 'left 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                 }}></div>
-              </div>
-              <span style={{ fontSize: '14px', fontWeight: '800', color: vegOnly ? '#16a34a' : '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Veg Only</span>
+           {/* Coupons Slider */}
+           <div className="flex gap-4 overflow-x-auto no-scrollbar py-4 -mx-2 px-2">
+              {[
+                { label: '60% OFF UPTO ₹120', code: 'USE STEAL60', icon: '🎁' },
+                { label: 'FLAT ₹100 OFF', code: 'USE SAVE100', icon: '💰' },
+                { label: 'EXTRA 20% OFF', code: 'USE ICICI20', icon: '💳' }
+              ].map((c, i) => (
+                <div key={i} className="min-w-[200px] border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex gap-3 italic">
+                   <div className="text-xl">{c.icon}</div>
+                   <div>
+                      <p className="text-[10px] font-black text-dark uppercase tracking-tight mb-1">{c.label}</p>
+                      <p className="text-[9px] font-bold text-dark-light">{c.code}</p>
+                   </div>
+                </div>
+              ))}
            </div>
-           <div style={{ flex: 1, position: 'relative' }}>
-              <Search style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={18} />
+        </div>
+
+        {/* Menu Controls */}
+        <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-sm -mx-4 px-4 py-4 border-b border-gray-50 mb-10 flex items-center justify-between shadow-sm lg:shadow-none">
+           <div className="flex items-center gap-6">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="text-[10px] font-black text-dark-muted uppercase tracking-widest">Veg Only</div>
+                  <div 
+                    onClick={() => setIsVegOnly(!isVegOnly)}
+                    className={`w-10 h-5 rounded-full relative transition-all ${isVegOnly ? 'bg-success shadow-lg shadow-success/20' : 'bg-gray-200'}`}
+                  >
+                    <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${isVegOnly ? 'left-5' : 'left-1 shadow-sm'}`} />
+                  </div>
+              </label>
+           </div>
+           <div className="relative group max-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-light group-focus-within:text-primary transition-colors" size={16} />
               <input 
-                 type="text" 
-                 placeholder="Search in menu..." 
-                 className="input-field-premium"
-                 style={{ paddingLeft: '3rem', width: '100%', maxWidth: '300px', backgroundColor: '#f8fafc' }}
-                 value={searchQuery}
-                 onChange={(e) => setSearchQuery(e.target.value)}
+                type="text" 
+                placeholder="Search menus.." 
+                className="w-full bg-gray-50 border-none rounded-xl py-2 pl-10 pr-4 text-xs font-bold outline-none ring-2 ring-transparent focus:ring-primary/10 transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
            </div>
         </div>
 
-        {/* Menu Section with Sidebar Mockup */}
-        <div style={{ display: 'flex', gap: '3rem', paddingBottom: '8rem' }} className="flex-col lg-flex-row">
-           
-           {/* Sidebar Categories */}
-           <aside className="menu-aside-nav hidden lg-block">
-              <h3 style={{ fontSize: '12px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem' }}>Explore Menu</h3>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                 {['Recommended', 'Main Course', 'Appetizers', 'Beverages', 'Desserts'].map((cat, i) => (
-                    <button 
-                       key={i}
-                       className={`menu-nav-btn ${i === 0 ? 'active' : ''}`}
-                    >
-                       {cat}
-                    </button>
-                 ))}
-              </nav>
-           </aside>
+        {/* Menu Sections */}
+        <div className="space-y-12">
+           {menuSections.map((section, sidx) => (
+              <section key={section.title} className="scroll-mt-40">
+                 <div className="flex justify-between items-center mb-8 border-b-8 border-gray-50 pb-4">
+                    <h2 className="text-xl font-black text-dark uppercase italic tracking-tighter">{section.title} ({section.items.length})</h2>
+                    <ChevronDown size={20} className="text-dark-muted" />
+                 </div>
 
-           {/* Menu Items */}
-           <main style={{ flexGrow: 1 }}>
-              <div style={{ marginBottom: '2.5rem' }}>
-                 <h2 className="results-title" style={{ fontSize: '24px' }}>
-                    {vegOnly ? 'Pure Veg' : 'Recommended'} ({filteredItems.length})
-                 </h2>
-              </div>
-
-               <div style={{ minHeight: '400px' }}>
-                  {filteredItems.length > 0 ? (
-                     filteredItems.map((food) => (
-                        <motion.div 
-                           key={food._id} 
-                           initial={{ opacity: 0, y: 20 }}
-                           whileInView={{ opacity: 1, y: 0 }}
-                           viewport={{ once: true }}
-                           className="menu-item-row-large group"
-                        >
-                           <div className="menu-item-content">
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                                 <div className="veg-indicator-box" style={{ borderColor: food.category === 'Veg' ? '#16a34a' : '#dc2626' }}>
-                                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: food.category === 'Veg' ? '#16a34a' : '#dc2626' }}></div>
-                                 </div>
-                                 <span style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', color: food.category === 'Veg' ? '#16a34a' : '#dc2626' }}>{food.category}</span>
-                              </div>
-                              <h3 className="card-title" style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{food.name}</h3>
-                              <p className="results-title" style={{ fontSize: '1.125rem', marginBottom: '0.75rem' }}>₹{food.price}</p>
-                              <p style={{ color: '#94a3b8', fontSize: '14px', fontWeight: '500', lineHeight: '1.6', maxWidth: '32rem' }}>{food.description}</p>
-                           </div>
-
-                           <div className="menu-item-img-wrapper">
-                              <img 
-                                 src={food.image} 
-                                 alt={food.name} 
-                                 className="menu-item-img"
-                              />
-                              <button 
-                                 onClick={() => handleAddToCart(food)}
-                                 className="add-btn-floating"
-                              >
-                                 ADD
-                              </button>
-                              <p style={{ fontSize: '10px', textAlign: 'center', color: '#94a3b8', fontWeight: '900', marginTop: '1.5rem', textTransform: 'uppercase' }}>Customizable</p>
-                           </div>
-                        </motion.div>
-                     ))
-                  ) : (
-                     <div style={{ padding: '5rem 0', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '1.5rem', border: '2px dashed #e2e8f0' }}>
-                        <p style={{ color: '#64748b', fontWeight: '500', fontStyle: 'italic' }}>No items available in the menu yet.</p>
-                     </div>
-                  )}
-               </div>
-
-               {/* Reviews Section */}
-               <div style={{ marginTop: '6rem', paddingTop: '4rem', borderTop: '1px solid #f1f5f9' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3rem' }}>
-                     <div>
-                        <h2 className="results-title" style={{ fontSize: '28px' }}>Customer Reviews</h2>
-                        <p style={{ color: '#64748b', fontWeight: '500', marginTop: '0.25rem' }}>See what others are saying about {restaurant.name}</p>
-                     </div>
-                     <div style={{ padding: '1rem 2rem', backgroundColor: '#f0fdf4', borderRadius: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', border: '1px solid #dcfce7' }}>
-                        <span style={{ fontSize: '24px', fontWeight: '900', color: '#15803d' }}>{restaurant.rating?.toFixed(1) || '0.0'}</span>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                           <div style={{ display: 'flex', gap: '2px', color: '#15803d' }}>
-                              {[...Array(5)].map((_, i) => (
-                                 <Star key={i} size={12} style={{ fill: i < Math.round(restaurant.rating || 0) ? 'currentColor' : 'none' }} />
-                              ))}
-                           </div>
-                           <span style={{ fontSize: '10px', fontWeight: '900', color: '#15803d', textTransform: 'uppercase' }}>{reviews.length} Verified Reviews</span>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '4rem' }} className="lg-grid-cols-2">
-                     {/* Review Form */}
-                     <div>
-                        <div className="white-card" style={{ padding: '2.5rem', borderRadius: '2rem' }}>
-                           <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', marginBottom: '1.5rem' }}>Write a Review</h3>
-                           <form onSubmit={submitReviewHandler} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                              <div>
-                                 <label className="input-label" style={{ marginBottom: '0.75rem' }}>How was your experience?</label>
-                                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                       <button
-                                          key={star}
-                                          type="button"
-                                          onClick={() => setRating(star)}
-                                          style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '0', color: star <= rating ? '#eab308' : '#e2e8f0', transition: 'transform 0.2s' }}
-                                          onMouseOver={e => e.currentTarget.style.transform = 'scale(1.2)'}
-                                          onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                                       >
-                                          <Star size={32} style={{ fill: star <= rating ? 'currentColor' : 'none', strokeWidth: 2 }} />
-                                       </button>
-                                    ))}
-                                 </div>
-                              </div>
-                              <div className="input-group">
-                                 <label className="input-label">Share your thoughts</label>
-                                 <textarea 
-                                    className="input-field-premium" 
-                                    style={{ minHeight: '120px', padding: '1.25rem', resize: 'none' }} 
-                                    placeholder="Tell us about the food quality, delivery speed, etc."
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    required
-                                 ></textarea>
-                              </div>
-                              <button 
-                                 type="submit" 
-                                 className="btn btn-primary" 
-                                 style={{ width: '100%', padding: '1rem', borderRadius: '1.25rem' }}
-                                 disabled={submittingReview}
-                              >
-                                 {submittingReview ? 'Submitting...' : 'POST REVIEW'}
-                              </button>
-                           </form>
-                        </div>
-                     </div>
-
-                     {/* Review List */}
-                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                        {reviews.length > 0 ? (
-                           reviews.map((review) => (
-                              <motion.div 
-                                 key={review._id} 
-                                 initial={{ opacity: 0, x: 20 }}
-                                 whileInView={{ opacity: 1, x: 0 }}
-                                 viewport={{ once: true }}
-                                 style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '2rem' }}
-                              >
-                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                       <div style={{ width: '3rem', height: '3rem', borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '900', color: '#64748b' }}>
-                                          {review.name.charAt(0)}
-                                       </div>
-                                       <div>
-                                          <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#0f172a' }}>{review.name}</h4>
-                                          <p style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '500' }}>{new Date(review.createdAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</p>
-                                       </div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '2px', color: '#eab308' }}>
-                                       {[...Array(5)].map((_, i) => (
-                                          <Star key={i} size={14} style={{ fill: i < review.rating ? 'currentColor' : 'none' }} />
-                                       ))}
-                                    </div>
-                                 </div>
-                                 <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', fontWeight: '500' }}>{review.comment}</p>
-                              </motion.div>
-                           ))
-                        ) : (
-                           <div style={{ padding: '4rem 0', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '2rem', border: '2px dashed #e2e8f0' }}>
-                              <p style={{ color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '12px' }}>No reviews yet</p>
-                              <p style={{ color: '#64748b', fontSize: '14px', marginTop: '0.5rem' }}>Be the first to share your experience!</p>
-                           </div>
-                        )}
-                     </div>
-                  </div>
-               </div>
-           </main>
+                 <div className="divide-y divide-gray-100 italic">
+                    {section.items.map((item) => {
+                       const count = getItemCount(item._id);
+                       return (
+                          <div key={item._id} className="py-10 flex justify-between gap-10 group hover:bg-gray-50/50 -mx-4 px-4 rounded-3xl transition-colors">
+                             <div className="flex-grow">
+                                <div className="flex items-start gap-3 mb-2">
+                                   <div className={`w-4 h-4 border-2 p-0.5 rounded-sm flex-shrink-0 ${item.isVeg ? 'border-success' : 'border-red-500'}`}>
+                                      <div className={`w-full h-full rounded-full ${item.isVeg ? 'bg-success' : 'bg-red-500'}`} />
+                                   </div>
+                                   {item.isBestSeller && <span className="text-[10px] font-black text-orange-500 tracking-[0.2em] uppercase">Bestseller</span>}
+                                </div>
+                                <h3 className="text-lg font-black text-dark tracking-tighter mb-1 uppercase group-hover:text-primary transition-colors">{item.name}</h3>
+                                <p className="text-sm font-black text-dark mb-4 italic tracking-tighter">₹{item.price}</p>
+                                <p className="text-xs text-dark-light font-bold leading-relaxed line-clamp-2 uppercase tracking-tight">{item.description}</p>
+                             </div>
+                             <div className="relative flex-shrink-0 w-32 h-32 md:w-36 md:h-36">
+                                <img 
+                                   src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=300'} 
+                                   className="w-full h-full object-cover rounded-[1.5rem] shadow-sm transform group-hover:scale-105 transition-transform duration-500" 
+                                   alt={item.name} 
+                                />
+                                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-24">
+                                   {count > 0 ? (
+                                      <div className="flex items-center justify-between bg-white border border-gray-100 rounded-xl py-2 px-3 shadow-lg shadow-primary/5 text-primary">
+                                         <button onClick={() => updateQuantity(item._id, count - 1)} className="hover:scale-110 active:scale-95 transition-transform"><Minus size={14} strokeWidth={3} /></button>
+                                         <span className="font-black text-sm">{count}</span>
+                                         <button onClick={() => updateQuantity(item._id, count + 1)} className="hover:scale-110 active:scale-95 transition-transform"><Plus size={14} strokeWidth={3} /></button>
+                                      </div>
+                                   ) : (
+                                      <button 
+                                        onClick={() => addToCart(item)}
+                                        className="w-full bg-white border border-gray-100 text-success text-sm font-black py-2.5 rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all active:scale-95 uppercase tracking-widest"
+                                      >
+                                         ADD
+                                      </button>
+                                   )}
+                                </div>
+                             </div>
+                          </div>
+                       );
+                    })}
+                 </div>
+              </section>
+           ))}
         </div>
       </div>
+
+      {/* Sticky Bottom Cart Indicator (Mobile-friendly) */}
+      <AnimatePresence>
+        {cartItems.length > 0 && (
+          <motion.div 
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4"
+          >
+             <Link to="/cart" className="flex items-center justify-between bg-success text-white p-5 rounded-[2rem] shadow-2xl hover:scale-[1.02] active:scale-95 transition-all">
+                <div className="flex flex-col">
+                   <span className="text-[10px] font-black uppercase tracking-widest opacity-80">{cartItems.length} ITEM{cartItems.length > 1 ? 'S' : ''}</span>
+                   <span className="text-lg font-black tracking-tighter uppercase italic">VIEW CART</span>
+                </div>
+                <div className="flex items-center gap-4">
+                   <div className="h-10 w-px bg-white/20" />
+                   <div className="flex items-center gap-2">
+                      <span className="text-xl font-black italic">₹{cartItems.reduce((acc, i) => acc + (i.price * i.quantity), 0)}</span>
+                      <ChevronRight size={24} strokeWidth={3} />
+                   </div>
+                </div>
+             </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

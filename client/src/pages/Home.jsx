@@ -1,40 +1,35 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, ArrowRight, MapPin, ChevronDown, Flame } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import RestaurantCard from '../components/restaurant/RestaurantCard';
-import { mockRestaurants } from '../data/mockData';
-
-const categories = [
-  { name: 'Pizza', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=200', gradient: '#ffedd5' },
-  { name: 'Burgers', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=200', gradient: '#fef9c3' },
-  { name: 'Sushi', image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&q=80&w=200', gradient: '#fee2e2' },
-  { name: 'Desserts', image: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=200', gradient: '#fce7f3' },
-  { name: 'Salads', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=200', gradient: '#dcfce7' },
-  { name: 'Biryani', image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&q=80&w=200', gradient: '#fef3c7' },
-  { name: 'Chinese', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=200', gradient: '#fee2e2' },
-  { name: 'Tacos', image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=200', gradient: '#e0f2fe' },
-];
+import { Search, ChevronRight, ChevronLeft, SlidersHorizontal, ArrowRight, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  // Swiggy Categories ("What's on your mind?")
+  const categories = [
+    { name: 'Pizzas', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029856/PC_Creative%20refresh/3D_Menu/vp/pizzas.png' },
+    { name: 'Burgers', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029845/PC_Creative%20refresh/3D_Menu/vp/burgers.png' },
+    { name: 'Biryani', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1675667625/PC_Creative%20refresh/Biryani_2.png' },
+    { name: 'Cakes', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029845/PC_Creative%20refresh/3D_Menu/vp/cakes.png' },
+    { name: 'North Indian', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1675667625/PC_Creative%20refresh/North_Indian_4.png' },
+    { name: 'Chinese', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029848/PC_Creative%20refresh/3D_Menu/vp/chinese.png' },
+    { name: 'South Indian', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1675667626/PC_Creative%20refresh/South_Indian_4.png' },
+    { name: 'Desserts', img: 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029853/PC_Creative%20refresh/3D_Menu/vp/desserts.png' }
+  ];
 
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
         const { data } = await api.get('/restaurants');
-        if (data && data.length > 0) {
-          setRestaurants(data.slice(0, 8));
-        } else {
-          // Fallback if DB is empty
-          setRestaurants(mockRestaurants.slice(0, 8));
-        }
+        setRestaurants(data);
       } catch (err) {
-        console.error('Error fetching restaurants, using mock data:', err);
-        setRestaurants(mockRestaurants.slice(0, 8));
+        console.error('Error fetching restaurants:', err);
+        // Fallback or Empty state handled in UI
       } finally {
         setLoading(false);
       }
@@ -42,139 +37,113 @@ const Home = () => {
     fetchRestaurants();
   }, []);
 
+  const filterOptions = [
+    'Filter', 'Sort By', 'Fast Delivery', 'New on Swiggy', 'Ratings 4.0+', 'Pure Veg', 'Offers', 'Rs. 300-Rs. 600'
+  ];
+
   return (
-    <div className="home-page-root">
-
-      {/* ── HERO SECTION ── */}
-      <section className="hero-section">
-        <div className="hero-bg">
-          <img
-            src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=2070"
-            alt="Food background"
-          />
-          <div className="hero-overlay" />
-        </div>
-
-        <div className="hero-content">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-          >
-            <h1 className="hero-title">
-              FOODIE<span>EXPRESS</span>
-            </h1>
-            <p className="hero-subtitle">
-              Discover the best food & drinks <br className="lg-only" />
-              delivered early to your door 🚀
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="search-pill"
-          >
-            <div className="search-pill-location md-only">
-              <MapPin className="pin-icon" size={20} />
-              <input
-                className="location-input"
-                placeholder="Downtown, New York"
-              />
-              <ChevronDown size={16} className="chevron-icon" />
-              <div className="vertical-divider" />
+    <div className="bg-white min-h-screen">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-8 py-8 sm:py-12">
+        
+        {/* Section 1: "What's on your mind?" */}
+        <section className="mb-14 border-b border-gray-100 pb-12">
+          <div className="flex justify-between items-center mb-6 px-2">
+            <h2 className="text-2xl font-black text-dark tracking-tighter uppercase italic">What's on your mind?</h2>
+            <div className="flex gap-2">
+               <button className="p-2.5 bg-gray-100/80 rounded-full hover:bg-gray-200 transition-colors text-dark"><ChevronLeft size={20} /></button>
+               <button className="p-2.5 bg-gray-100/80 rounded-full hover:bg-gray-200 transition-colors text-dark"><ChevronRight size={20} /></button>
             </div>
-            <div className="search-pill-main">
-              <Search className="search-icon-dim" size={20} style={{ color: '#999' }} />
-              <input
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="main-search-input"
-                placeholder="Search for restaurant, cuisine or a dish"
-              />
-            </div>
-            <Link
-              to={`/restaurants${searchQuery ? `?q=${searchQuery}` : ''}`}
-              className="btn btn-primary lg-only search-submit-btn"
-            >
-              Search
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── CATEGORIES ── */}
-      <section className="category-section">
-        <div className="page-container">
-          <h2 className="section-heading-small">
-            What's on your mind?
-          </h2>
-          <div className="category-scroll-container no-scrollbar">
-            {categories.map((cat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                viewport={{ once: true }}
-              >
-                <Link to="/restaurants" className="category-item">
-                  <div className="category-circle" style={{ backgroundColor: cat.gradient }}>
-                    <img src={cat.image} alt={cat.name} />
-                  </div>
-                  <span className="category-label">
-                    {cat.name}
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
           </div>
-        </div>
-      </section>
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 -mx-4 px-4 sm:mx-0">
+             {categories.map((cat, i) => (
+                <motion.div 
+                   key={i}
+                   whileHover={{ scale: 1.05 }}
+                   whileTap={{ scale: 0.95 }}
+                   className="flex-shrink-0 cursor-pointer text-center group"
+                   onClick={() => navigate(`/restaurants?cuisine=${cat.name}`)}
+                >
+                   <div className="w-32 h-32 sm:w-40 sm:h-40 overflow-hidden relative mb-2">
+                      <img src={cat.img} alt={cat.name} className="w-full h-full object-contain" />
+                   </div>
+                   <span className="text-sm font-extrabold text-dark-muted group-hover:text-primary transition-colors tracking-tighter uppercase italic">{cat.name}</span>
+                </motion.div>
+             ))}
+          </div>
+        </section>
 
-      {/* ── RESTAURANTS GRID ── */}
-      <section className="featured-section">
-        <div className="page-container">
-          <div className="section-header">
-            <div className="header-text-group">
-              <div className="label-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#e23744' }}>
-                <Flame size={18} />
-                <span className="section-label" style={{ fontWeight: 600, fontSize: '0.9rem' }}>Top Rated</span>
-              </div>
-              <h2 className="section-title-large">
-                Restaurants near you
-              </h2>
+        {/* Section 2: Top Brands Scroll */}
+        <section className="mb-14 border-b border-gray-100 pb-12">
+          <div className="flex justify-between items-center mb-8 px-2">
+            <h2 className="text-2xl font-black text-dark tracking-tighter uppercase italic">Top restaurant chains in Mumbai</h2>
+            <div className="flex gap-2">
+               <button className="p-2.5 bg-gray-100/80 rounded-full hover:bg-gray-200 transition-colors text-dark"><ChevronLeft size={20} /></button>
+               <button className="p-2.5 bg-gray-100/80 rounded-full hover:bg-gray-200 transition-colors text-dark"><ChevronRight size={20} /></button>
+            </div>
+          </div>
+          <div className="flex items-stretch gap-8 overflow-x-auto no-scrollbar py-4 -mx-4 px-4 sm:mx-0">
+             {restaurants.slice(0, 6).map((restaurant) => (
+                <div key={restaurant._id} className="min-w-[280px] sm:min-w-[320px]">
+                   <RestaurantCard restaurant={restaurant} layout="vertical" />
+                </div>
+             ))}
+             {loading && Array(4).fill(0).map((_, i) => (
+                <div key={i} className="min-w-[320px] bg-gray-50 rounded-[2rem] h-64 animate-pulse" />
+             ))}
+          </div>
+        </section>
+
+        {/* Section 3: Restaurants with Online Delivery */}
+        <section>
+          <div className="mb-10 px-2">
+            <h2 className="text-2xl font-black text-dark tracking-tighter uppercase italic mb-6">Restaurants with online food delivery in Mumbai</h2>
+            
+            {/* Filter Bar */}
+            <div className="flex overflow-x-auto no-scrollbar gap-3 py-2 -mx-4 px-4 sm:mx-0">
+               {filterOptions.map((opt, i) => (
+                  <button 
+                    key={i} 
+                    className={`flex-shrink-0 flex items-center gap-2 px-6 py-2.5 rounded-full border-2 transition-all font-black text-xs uppercase tracking-widest ${i === 0 ? 'bg-dark text-white border-dark' : 'bg-white text-dark-muted border-gray-100 hover:border-dark-light shadow-sm'}`}
+                  >
+                    {opt} {i === 0 && <SlidersHorizontal size={14} strokeWidth={3} />}
+                  </button>
+               ))}
             </div>
           </div>
 
           {loading ? (
-            <div className="restaurant-grid">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="skeleton-card-container">
-                  <div className="skeleton restaurant-skeleton-img" />
-                  <div className="skeleton restaurant-skeleton-name" />
-                  <div className="skeleton restaurant-skeleton-meta" />
-                </div>
-              ))}
-            </div>
+             <div className="flex flex-col items-center justify-center py-40 gap-4 opacity-50">
+                <Loader2 size={40} className="animate-spin text-primary" />
+                <p className="font-black text-dark tracking-widest uppercase text-xs">Curating our top menus for you...</p>
+             </div>
+          ) : restaurants.length === 0 ? (
+             <div className="py-24 text-center bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200">
+                <div className="inline-flex p-6 bg-white rounded-3xl shadow-lg mb-6"><Search className="text-dark-light" size={40} /></div>
+                <h3 className="text-xl font-black text-dark mb-2">NO RESTAURANTS NEARBY</h3>
+                <p className="text-sm text-dark-muted font-bold tracking-widest uppercase">Try changing your location or category</p>
+             </div>
           ) : (
-            <div className="restaurant-grid">
-              {restaurants.map((rest, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
+              {restaurants.map((restaurant) => (
                 <motion.div
-                  key={rest._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.07 }}
-                  viewport={{ once: true }}
+                   key={restaurant._id}
+                   initial={{ opacity: 0, scale: 0.95 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   transition={{ duration: 0.4 }}
                 >
-                  <RestaurantCard restaurant={rest} />
+                   <RestaurantCard restaurant={restaurant} />
                 </motion.div>
               ))}
             </div>
           )}
+        </section>
+
+        {/* Footer Catch Phrase */}
+        <div className="mt-32 pt-20 border-t border-gray-100 text-center">
+           <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-4">Every bite counts</p>
+           <h4 className="text-5xl md:text-7xl font-black text-dark tracking-tighter leading-tight italic uppercase opacity-5">DELIVERING HAPPINESS</h4>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

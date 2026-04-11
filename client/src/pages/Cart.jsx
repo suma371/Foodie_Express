@@ -1,358 +1,238 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useCartContext } from '../context/CartContext';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck, MapPin, Ticket, X, Tag, ChevronRight } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useAuthContext } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingBag, ChevronRight, X, Percent, ArrowRight, Minus, Plus, ShieldCheck, Info, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const AVAILABLE_COUPONS = [
-  { code: 'WELCOME50', discount: 50, type: 'percent', max: 100, desc: '50% off up to ₹100', minOrder: 199 },
-  { code: 'SAVEMORE', discount: 20, type: 'percent', max: 500, desc: '20% off up to ₹500', minOrder: 499 },
-  { code: 'FREEDEL', discount: 35, type: 'delivery', desc: 'Free delivery on this order', minOrder: 149 },
-];
+import toast from 'react-hot-toast';
 
 const Cart = () => {
-  const { cartItems, updateQty, removeFromCart, getCartTotal } = useCartContext();
-  const [couponInput, setCouponInput] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [couponError, setCouponError] = useState('');
-  const [showCouponSheet, setShowCouponSheet] = useState(false);
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCartContext();
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [showCoupons, setShowCoupons] = useState(false);
 
   const subtotal = parseFloat(getCartTotal());
-  const deliveryFee = 35;
-  const platformFee = 5;
+  const deliveryFee = subtotal > 500 ? 0 : 40;
+  const platformFee = 7;
   const gst = subtotal * 0.05;
+  const total = subtotal + deliveryFee + platformFee + gst - discount;
 
-  const getDiscountAmount = () => {
-    if (!appliedCoupon) return 0;
-    if (appliedCoupon.type === 'delivery') return deliveryFee;
-    if (appliedCoupon.type === 'percent') {
-      const raw = (subtotal * appliedCoupon.discount) / 100;
-      return Math.min(raw, appliedCoupon.max);
-    }
-    return 0;
-  };
+  const coupons = [
+    { code: 'STEAL60', label: '60% OFF UPTO ₹120', min: 200, disc: 120 },
+    { code: 'WELCOME', label: 'FLAT ₹100 OFF', min: 400, disc: 100 },
+    { code: 'FREEDEL', label: 'FREE DELIVERY', min: 300, disc: 40 }
+  ];
 
-  const discount = getDiscountAmount();
-  const effectiveDelivery = appliedCoupon?.type === 'delivery' ? 0 : deliveryFee;
-  const total = subtotal + effectiveDelivery + platformFee + gst - (appliedCoupon?.type !== 'delivery' ? discount : 0);
-
-  const applyCoupon = (code) => {
-    const found = AVAILABLE_COUPONS.find(c => c.code.toUpperCase() === code.toUpperCase());
-    if (!found) {
-      setCouponError('Invalid coupon code');
-      setAppliedCoupon(null);
+  const applyCoupon = (c) => {
+    if (subtotal < c.min) {
+      toast.error(`Minimum order value ₹${c.min} required`);
       return;
     }
-    if (subtotal < found.minOrder) {
-      setCouponError(`Minimum order of ₹${found.minOrder} required`);
-      return;
-    }
-    setAppliedCoupon(found);
-    setCouponError('');
-    setShowCouponSheet(false);
-    setCouponInput('');
-    toast.success(`🎉 Coupon ${found.code} applied!`);
-  };
-
-  const removeCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponInput('');
-    setCouponError('');
-    toast('Coupon removed');
+    setCouponCode(c.code);
+    setDiscount(c.disc);
+    setShowCoupons(false);
+    toast.success('Coupon applied!');
   };
 
   if (cartItems.length === 0) {
     return (
-      <div className="empty-cart-container">
-        <div className="empty-cart-icon-bg">
-          <ShoppingBag size={80} style={{ color: '#e2e8f0' }} />
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-white px-4 text-center">
+        <div className="w-80 h-80 mb-8 relative">
+           <img src="https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto/2xempty_cart_ybi7ss" className="w-full h-full object-contain opacity-80" alt="Empty" />
+           <motion.div 
+              animate={{ rotate: [0, 10, -10, 0] }} 
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="absolute top-1/4 left-1/2 -translate-x-1/2"
+           >
+              <ShoppingBag size={48} className="text-gray-200" />
+           </motion.div>
         </div>
-        <h2 className="results-title" style={{ marginBottom: '1rem' }}>Your cart is empty</h2>
-        <p className="results-subtitle" style={{ marginBottom: '2.5rem', maxWidth: '24rem', marginInline: 'auto' }}>
-          Looks like you haven't added anything yet. Go ahead and explore top restaurants!
-        </p>
-        <Link to="/restaurants" className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.125rem' }}>
-          Browse Restaurants
+        <h2 className="text-2xl font-black text-dark tracking-tighter uppercase italic mb-2">Your cart is empty</h2>
+        <p className="text-sm font-bold text-dark-muted tracking-wide uppercase italic mb-10">You can go to home page to view more restaurants</p>
+        <Link to="/" className="bg-primary text-white px-10 py-5 rounded-2xl font-black shadow-xl shadow-primary/30 hover:scale-[1.05] transition-transform active:scale-95 uppercase tracking-tighter italic">
+          SEE RESTAURANTS NEAR YOU
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="cart-page">
-      <div className="page-container">
-        
-        <div className="cart-layout">
+    <div className="bg-gray-50/50 min-h-screen pt-4 pb-24">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-8">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
           
-          {/* Main Cart Area */}
-          <div className="cart-main-area">
-            <div className="white-card">
-               <div className="cart-header">
-                  <h1 className="results-title" style={{ fontSize: '1.5rem' }}>Your Cart ({cartItems.length} items)</h1>
-                  <Link to="/restaurants" className="hover-link" style={{ color: 'var(--primary-brand)', fontWeight: '700', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'none' }}>Add More</Link>
-               </div>
-
-               <div>
-                  {cartItems.map((item) => (
-                    <div key={item._id} className="cart-item-row">
-                      <div style={{ position: 'relative' }}>
-                         <img 
-                           src={item.image} 
-                           alt={item.name} 
-                           className="cart-item-img"
-                         />
-                         <div style={{ 
-                            position: 'absolute', top: '-4px', left: '-4px', width: '16px', height: '16px', border: '2px solid white', 
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2px', backgroundColor: 'white',
-                            borderRadius: '2px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                         }}>
-                            <div style={{ width: '100%', height: '100%', borderRadius: '50%', backgroundColor: item.category === 'Veg' ? '#16a34a' : '#dc2626' }}></div>
-                         </div>
+          {/* Main Content Area */}
+          <div className="w-full lg:w-[65%] space-y-6">
+             <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-100">
+                <div className="p-8 md:p-10">
+                   <div className="flex items-center gap-6 mb-10">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-md">
+                         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=200" className="w-full h-full object-cover" alt="RS" />
                       </div>
-                      
-                      <div className="flex-grow" style={{ textAlign: 'center' }}>
-                        <h3 className="card-title" style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{item.name}</h3>
-                        <p style={{ color: '#94a3b8', fontSize: '0.875rem', fontWeight: '500', marginBottom: '1.25rem' }}>From: {item.restaurant?.name || 'Local Kitchen'}</p>
-                        
-                        <div className="cart-item-actions">
-                          <div className="qty-pill">
-                            <button 
-                              onClick={() => updateQty(item._id, item.quantity > 1 ? item.quantity - 1 : 1)}
-                              className="qty-btn"
-                              disabled={item.quantity <= 1}
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span style={{ width: '1.5rem', textAlign: 'center', fontSize: '0.875rem', fontWeight: '900', color: '#1e293b' }}>{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQty(item._id, item.quantity + 1)}
-                              className="qty-btn"
-                            >
-                              <Plus size={14} />
-                            </button>
-                          </div>
-                          
-                          <button 
-                            onClick={() => removeFromCart(item._id)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', transition: 'color 0.2s' }}
-                            onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
-                            onMouseOut={e => e.currentTarget.style.color = '#cbd5e1'}
-                          >
-                            <Trash2 size={16} /> Remove
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <p className="results-title" style={{ fontSize: '1.5rem' }}>
-                          ₹{(item.price * item.quantity).toFixed(0)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-               </div>
-            </div>
-
-            {/* ── COUPONS & OFFERS SECTION ── */}
-            <div className="white-card" style={{ marginTop: '1.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{ background: 'linear-gradient(135deg, #e23744, #fc8019)', padding: '0.75rem', borderRadius: '1rem', color: 'white' }}>
-                  <Ticket size={24} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ fontWeight: '900', color: '#0f172a', fontSize: '1rem' }}>Coupons & Offers</h3>
-                  <p style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600' }}>Save more on your order</p>
-                </div>
-              </div>
-
-              {/* Applied Coupon Banner */}
-              <AnimatePresence>
-                {appliedCoupon && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="coupon-applied-banner"
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <Tag size={18} style={{ color: '#16a34a' }} />
                       <div>
-                        <p style={{ fontWeight: '800', color: '#166534', fontSize: '0.875rem' }}>{appliedCoupon.code}</p>
-                        <p style={{ fontSize: '0.75rem', color: '#15803d' }}>You save ₹{discount.toFixed(0)} on this order!</p>
+                         <h2 className="text-2xl font-black text-dark tracking-tighter uppercase italic leading-none">{cartItems[0]?.restaurantName || 'Restaurant'}</h2>
+                         <p className="text-xs font-bold text-dark-muted uppercase tracking-widest mt-2">{cartItems[0]?.address?.city || 'Downtown'}</p>
                       </div>
-                    </div>
-                    <button onClick={removeCoupon} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', padding: '0.25rem' }}>
-                      <X size={18} />
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                   </div>
 
-              {/* Coupon Input */}
-              {!appliedCoupon && (
-                <div>
-                  <div className="coupon-input-row">
-                    <input
-                      type="text"
-                      placeholder="Enter coupon code"
-                      value={couponInput}
-                      onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
-                      className="input-field-premium"
-                      style={{ flex: 1, textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: '700' }}
-                    />
-                    <button
-                      onClick={() => applyCoupon(couponInput)}
-                      disabled={!couponInput}
-                      className="btn btn-primary"
-                      style={{ padding: '0.75rem 1.5rem', fontSize: '0.8rem', fontWeight: '800', borderRadius: '0.75rem', opacity: couponInput ? 1 : 0.5 }}
-                    >
-                      APPLY
-                    </button>
-                  </div>
-                  {couponError && <p style={{ color: '#ef4444', fontSize: '0.75rem', fontWeight: '600', marginTop: '0.5rem' }}>{couponError}</p>}
-
-                  {/* Browse Coupons Button */}
-                  <button
-                    onClick={() => setShowCouponSheet(true)}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '1rem', padding: '1rem', background: '#fef2f2', border: '1px dashed #fca5a5', borderRadius: '0.75rem', cursor: 'pointer', transition: 'all 0.2s' }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', fontSize: '0.85rem', color: '#e23744' }}>
-                      <Ticket size={16} /> View all coupons
-                    </span>
-                    <ChevronRight size={16} style={{ color: '#e23744' }} />
-                  </button>
+                   <div className="divide-y divide-gray-100">
+                      {cartItems.map(item => (
+                        <div key={item._id} className="py-8 flex items-center justify-between group">
+                           <div className="flex items-start gap-4">
+                              <div className={`w-4 h-4 border-2 p-0.5 rounded-sm flex-shrink-0 mt-1 ${item.isVeg ? 'border-success' : 'border-red-500'}`}>
+                                 <div className={`w-full h-full rounded-full ${item.isVeg ? 'bg-success' : 'bg-red-500'}`} />
+                              </div>
+                              <div>
+                                 <h4 className="text-base font-black text-dark-muted group-hover:text-primary transition-colors tracking-tighter uppercase italic leading-tight">{item.name}</h4>
+                                 <p className="text-xs font-black text-dark tracking-widest mt-1 italic">₹{item.price}</p>
+                              </div>
+                           </div>
+                           <div className="flex items-center gap-8">
+                              <div className="flex items-center justify-between bg-white border border-gray-100 rounded-xl py-2 px-3 shadow-sm text-success w-24">
+                                 <button onClick={() => updateQuantity(item._id, item.quantity - 1)} className="hover:scale-110 active:scale-95 transition-transform"><Minus size={14} strokeWidth={3} /></button>
+                                 <span className="font-black text-sm">{item.quantity}</span>
+                                 <button onClick={() => updateQuantity(item._id, item.quantity + 1)} className="hover:scale-110 active:scale-95 transition-transform"><Plus size={14} strokeWidth={3} /></button>
+                              </div>
+                              <span className="text-sm font-black text-dark w-16 text-right italic">₹{item.price * item.quantity}</span>
+                           </div>
+                        </div>
+                      ))}
+                   </div>
                 </div>
-              )}
-            </div>
 
-            {/* Delivery Info Mock */}
-            <div className="white-card" style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-               <div style={{ backgroundColor: '#eff6ff', padding: '1rem', borderRadius: '1rem', color: '#2563eb' }}>
-                  <MapPin size={28} />
-               </div>
-               <div className="flex-grow">
-                  <h3 style={{ fontWeight: '900', color: '#0f172a' }}>Delivery Address</h3>
-                  <p style={{ fontSize: '0.875rem', color: '#64748b', fontWeight: '500' }}>Please select a delivery address to proceed.</p>
-               </div>
-               <button className="btn btn-outline" style={{ borderColor: '#2563eb', color: '#2563eb', padding: '0.5rem 1.5rem' }}>Set Address</button>
-            </div>
+                <div className="bg-gray-50 p-6 flex items-center gap-4 italic">
+                   <div className="p-3 bg-white rounded-xl shadow-sm"><Info size={20} className="text-dark-muted" /></div>
+                   <p className="text-[10px] font-black text-dark-muted uppercase tracking-widest leading-relaxed">
+                      Any suggestions? We will pass them on to the restaurant. Extra charges may apply.
+                   </p>
+                </div>
+             </div>
+
+             {/* Offers Section */}
+             <button 
+                onClick={() => setShowCoupons(true)}
+                className="w-full bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100 flex items-center justify-between group"
+             >
+                <div className="flex items-center gap-5">
+                   <div className="p-4 bg-primary/5 text-primary rounded-2xl group-hover:scale-110 transition-transform"><Percent size={24} /></div>
+                   <div className="text-left">
+                      <p className="text-sm font-black text-dark tracking-tight uppercase italic">{couponCode ? `APPLIED: ${couponCode}` : 'APPLY COUPON'}</p>
+                      <p className="text-[10px] font-bold text-dark-muted uppercase tracking-widest mt-1">Save big on your daily meal</p>
+                   </div>
+                </div>
+                <ChevronRight size={24} className="text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+             </button>
           </div>
 
-          {/* Sticky Summary */}
-          <div className="cart-summary-area">
-            <div className="white-card" style={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)' }}>
-               <h2 style={{ fontSize: '0.75rem', fontWeight: '900', color: '#94a3b8', marginBottom: '2rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Bill Details</h2>
-               
-               <div style={{ marginBottom: '2rem' }}>
-                 <div className="bill-row">
-                   <span>Item Total</span>
-                   <span style={{ color: '#0f172a' }}>₹{subtotal.toFixed(0)}</span>
-                 </div>
-                 <div className="bill-row">
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '4px' }}>Delivery Fee <InfoIcon size={12} /></div>
-                   {appliedCoupon?.type === 'delivery' ? (
-                     <span style={{ color: '#16a34a' }}><s style={{color:'#94a3b8', marginRight:'0.35rem'}}>₹{deliveryFee}</s> FREE</span>
-                   ) : (
-                     <span style={{ color: '#0f172a' }}>₹{deliveryFee}</span>
-                   )}
-                 </div>
-                 <div className="bill-row" style={{ borderBottom: '1px solid #f8fafc', paddingBottom: '1.25rem' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '4px' }}>Platform Fee <InfoIcon size={12} /></div>
-                   <span style={{ color: '#0f172a' }}>₹{platformFee}</span>
-                 </div>
-                 <div className="bill-row" style={{ paddingTop: '0.5rem' }}>
-                   <span>GST & Restaurant Charges</span>
-                   <span style={{ color: '#0f172a' }}>₹{gst.toFixed(0)}</span>
-                 </div>
-                 {appliedCoupon && appliedCoupon.type !== 'delivery' && (
-                   <div className="bill-row" style={{ paddingTop: '0.5rem', color: '#16a34a' }}>
-                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Tag size={14} /> Coupon ({appliedCoupon.code})</span>
-                     <span>-₹{discount.toFixed(0)}</span>
+          {/* Sidebar Area: Bill Summary */}
+          <div className="w-full lg:w-[35%] sticky top-28">
+             <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-elevated border border-gray-100">
+                <h3 className="text-xs font-black text-dark-light uppercase tracking-[0.3em] mb-8">Bill Details</h3>
+                
+                <div className="space-y-4 mb-8">
+                   <div className="flex justify-between items-center text-xs font-bold text-dark-muted uppercase tracking-widest italic">
+                      <span>Item Total</span>
+                      <span>₹{subtotal.toFixed(0)}</span>
                    </div>
-                 )}
-               </div>
-               
-               <div className="bill-row-total">
-                 <span style={{ fontSize: '1.125rem', fontWeight: '900', color: '#0f172a', textTransform: 'uppercase' }}>To Pay</span>
-                 <span className="results-title" style={{ fontSize: '1.875rem' }}>
-                   ₹{total.toFixed(0)}
-                 </span>
-               </div>
+                   <div className="flex justify-between items-center text-xs font-bold text-dark-muted uppercase tracking-widest italic">
+                      <div className="flex items-center gap-2">
+                         <span>Delivery Fee</span>
+                         <div className="w-3 h-3 bg-gray-100 rounded-full flex items-center justify-center text-[8px] font-black">?</div>
+                      </div>
+                      <span className={deliveryFee === 0 ? 'text-success' : ''}>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}</span>
+                   </div>
+                   <div className="flex justify-between items-center text-xs font-bold text-dark-muted uppercase tracking-widest italic">
+                      <div className="flex items-center gap-2 text-primary">
+                         <span>Platform Fee</span>
+                      </div>
+                      <span>₹{platformFee}</span>
+                   </div>
+                   <div className="flex justify-between items-center text-xs font-bold text-dark-muted uppercase tracking-widest italic border-b border-gray-50 pb-4">
+                      <span>GST and Restaurant Charges</span>
+                      <span>₹{gst.toFixed(0)}</span>
+                   </div>
+                   {discount > 0 && (
+                     <div className="flex justify-between items-center text-xs font-bold text-success uppercase tracking-widest italic animate-pulse">
+                        <span>Coupon Discount</span>
+                        <span>-₹{discount}</span>
+                     </div>
+                   )}
+                </div>
 
-               {appliedCoupon && (
-                 <div style={{ background: 'linear-gradient(135deg, #f0fdf4, #ecfdf5)', borderRadius: '0.75rem', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
-                   <Tag size={14} style={{ color: '#16a34a' }} />
-                   <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#166534' }}>
-                     You're saving ₹{discount.toFixed(0)} with {appliedCoupon.code}!
-                   </span>
-                 </div>
-               )}
+                <div className="flex justify-between items-end mb-10">
+                   <span className="text-sm font-black text-dark uppercase tracking-[0.2em] mb-1">TO PAY</span>
+                   <span className="text-3xl font-black text-dark tracking-tighter italic leading-none">₹{total.toFixed(0)}</span>
+                </div>
 
-               <div style={{ backgroundColor: '#f0fdf4', borderRadius: '1rem', padding: '1rem', display: 'flex', alignItems: 'start', gap: '1rem', marginBottom: '2rem', marginTop: '1.5rem' }}>
-                  <ShieldCheck style={{ color: '#16a34a', flexShrink: 0 }} size={20} />
-                  <p style={{ fontSize: '11px', color: '#166534', fontWeight: '700', lineHeight: '1.5' }}>Safety first! We follow all protocols to ensure your food is handled with care.</p>
-               </div>
-               
-               <Link to="/checkout" className="btn btn-primary checkout-btn">
-                  CHECKOUT <ArrowRight size={22} style={{ strokeWidth: 3 }} />
-               </Link>
+                <div className="bg-green-50/50 p-5 rounded-2xl flex gap-4 mb-10 border border-green-100">
+                   <ShieldCheck className="text-green-600 flex-shrink-0" size={24} />
+                   <p className="text-[10px] text-green-700 font-black leading-relaxed uppercase">
+                      100% Secure Payments with 256-bit SSL encryption.
+                   </p>
+                </div>
 
-               <p style={{ fontSize: '10px', textAlign: 'center', color: '#94a3b8', fontWeight: '700', marginTop: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Secure Payments • No Hidden Charges</p>
-            </div>
+                <button 
+                  onClick={() => navigate('/checkout')}
+                  className="w-full bg-primary hover:bg-primary-dark text-white py-6 rounded-2xl font-black shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 text-lg uppercase italic tracking-tighter group"
+                >
+                  PROCEED TO PAY <ArrowRight size={24} strokeWidth={3} className="group-hover:translate-x-2 transition-transform" />
+                </button>
+             </div>
           </div>
         </div>
       </div>
 
-      {/* ── COUPON BOTTOM SHEET / MODAL ── */}
+      {/* Coupon Modal/Drawer */}
       <AnimatePresence>
-        {showCouponSheet && (
+        {showCoupons && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowCouponSheet(false)}
-              className="coupon-sheet-overlay"
+            <motion.div 
+               initial={{ opacity: 0 }} 
+               animate={{ opacity: 1 }} 
+               exit={{ opacity: 0 }} 
+               onClick={() => setShowCoupons(false)}
+               className="fixed inset-0 bg-dark/70 backdrop-blur-md z-[100]" 
             />
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="coupon-bottom-sheet"
+            <motion.div 
+               initial={{ y: '100%' }} 
+               animate={{ y: 0 }} 
+               exit={{ y: '100%' }} 
+               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+               className="fixed bottom-0 left-0 right-0 bg-white z-[101] rounded-t-[3rem] p-8 md:p-12 max-h-[80vh] overflow-y-auto no-scrollbar"
             >
-              <div className="coupon-sheet-header">
-                <h2 style={{ fontWeight: '900', fontSize: '1.25rem', color: '#0f172a' }}>Available Coupons</h2>
-                <button onClick={() => setShowCouponSheet(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem' }}>
-                  <X size={24} style={{ color: '#64748b' }} />
-                </button>
-              </div>
+               <div className="max-w-[700px] mx-auto">
+                  <div className="flex justify-between items-center mb-10">
+                     <div>
+                        <h3 className="text-2xl font-black text-dark uppercase italic tracking-tighter leading-none">Available Offers</h3>
+                        <p className="text-[10px] font-black text-dark-light uppercase tracking-widest mt-2">{coupons.length} DISCOUNT CODES FOUND</p>
+                     </div>
+                     <button onClick={() => setShowCoupons(false)} className="p-3 bg-gray-50 rounded-2xl"><X size={24} /></button>
+                  </div>
 
-              <div className="coupon-list">
-                {AVAILABLE_COUPONS.map(c => {
-                  const meetsMin = subtotal >= c.minOrder;
-                  return (
-                    <div key={c.code} className={`coupon-card ${!meetsMin ? 'disabled' : ''}`}>
-                      <div className="coupon-card-left">
-                        <div className="coupon-code-tag">
-                          <Ticket size={14} />
-                          <span>{c.code}</span>
+                  <div className="space-y-6">
+                     {coupons.map((c, i) => (
+                        <div key={i} className="border-2 border-dashed border-gray-100 rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:border-primary/50 transition-colors bg-gray-50/50">
+                           <div className="flex items-center gap-6">
+                              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-gray-100 group-hover:scale-110 transition-transform">🎟️</div>
+                              <div>
+                                 <span className="bg-white border border-gray-100 px-4 py-1.5 rounded-lg text-sm font-black text-dark tracking-widest">{c.code}</span>
+                                 <p className="text-lg font-black text-dark uppercase italic racking-tighter mt-3">{c.label}</p>
+                                 <p className="text-xs font-bold text-dark-muted mt-1">On orders above ₹{c.min}</p>
+                              </div>
+                           </div>
+                           <button 
+                             onClick={() => applyCoupon(c)}
+                             className="bg-dark text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-primary transition-colors shadow-lg active:scale-95"
+                           >
+                              APPLY NOW
+                           </button>
                         </div>
-                        <p className="coupon-desc">{c.desc}</p>
-                        <p className="coupon-min">Min order: ₹{c.minOrder}</p>
-                      </div>
-                      <button
-                        disabled={!meetsMin}
-                        onClick={() => applyCoupon(c.code)}
-                        className="coupon-apply-btn"
-                      >
-                        {meetsMin ? 'APPLY' : `Add ₹${(c.minOrder - subtotal).toFixed(0)} more`}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                     ))}
+                  </div>
+               </div>
             </motion.div>
           </>
         )}
@@ -360,9 +240,5 @@ const Cart = () => {
     </div>
   );
 };
-
-const InfoIcon = ({ size }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-);
 
 export default Cart;

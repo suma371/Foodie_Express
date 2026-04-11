@@ -1,62 +1,57 @@
-import { Star, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Star, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const RestaurantCard = ({ restaurant }) => {
-  const rating = restaurant.rating?.toFixed(1) || '4.2';
-  const isHighRating = parseFloat(rating) >= 4.0;
-  // Use provided delivery info or fallback to mock defaults
-  const deliveryTime = restaurant.deliveryTime || '25-30 mins';
-  const priceForTwo = restaurant.priceForTwo || '₹400 for two';
+  // Swiggy Rating Color logic
+  const ratingColor = restaurant.rating >= 4 ? 'bg-success' : 'bg-orange-400';
 
   return (
-    <Link to={`/restaurant/${restaurant._id}`} className="restaurant-card">
-      <div className="card-img-wrapper">
-        <img
-          src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800'}
-          alt={restaurant.name}
-        />
-        <div className="card-overlay-bottom">
-          <span className="card-overlay-text" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <Clock size={12} /> {deliveryTime}
-          </span>
-          <span className="card-overlay-text">{priceForTwo}</span>
+    <Link to={`/restaurant/${restaurant._id}`} className="group block">
+      <motion.div 
+        whileHover={{ scale: 0.96 }}
+        className="flex flex-col gap-3 transition-transform"
+      >
+        {/* Image Container */}
+        <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-sm group-hover:shadow-xl transition-all border border-gray-100">
+          <img
+            src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800'}
+            alt={restaurant.name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          {/* Discount Overlay (Swiggy Style) */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90" />
+          <div className="absolute bottom-3 left-4 right-4">
+             <p className="text-white font-black text-lg xl:text-xl tracking-tighter uppercase italic leading-none truncate">
+                {restaurant.offers?.[0] || 'Items at ₹129'}
+             </p>
+          </div>
         </div>
-      </div>
 
-      <div className="card-info">
-        <div className="card-title-row">
-          <h3 className="card-title">
+        {/* Info Content */}
+        <div className="px-2">
+          <h3 className="text-lg font-black text-dark tracking-tight leading-tight mb-1 truncate group-hover:text-primary transition-colors uppercase italic">
             {restaurant.name}
           </h3>
-          <div className={`rating-badge ${isHighRating ? '' : 'rating-mid'}`}>
-            {rating} <Star size={10} style={{ fill: 'white' }} />
+          
+          <div className="flex items-center gap-1.5 text-sm font-black text-dark tracking-tighter mb-1 uppercase">
+            <div className={`flex items-center gap-1 text-white ${ratingColor} p-1 rounded-full scale-90`}>
+              <Star size={12} fill="currentColor" />
+            </div>
+            <span>{restaurant.rating || '4.2'}</span>
+            <span className="text-gray-300">•</span>
+            <span className="flex items-center gap-1">{restaurant.deliveryTime || '25-30'} MINS</span>
+          </div>
+
+          <div className="text-xs font-bold text-dark-muted tracking-tight truncate mb-1">
+            {restaurant.cuisines?.slice(0, 3).join(', ') || 'North Indian, Chinese, Mughlai'}
+          </div>
+
+          <div className="text-xs font-bold text-dark-light tracking-wide uppercase italic">
+            {restaurant.address?.city || 'Downtown Central'}
           </div>
         </div>
-
-        <p className="card-subtitle">
-          {restaurant.description || 'Delicious food delivered to your doorstep.'}
-        </p>
-
-        <div className="card-footer-safety">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-            {restaurant.tagline && (
-              <span style={{ 
-                background: '#fef2f2', 
-                color: '#e23744', 
-                padding: '2px 8px', 
-                borderRadius: '4px', 
-                fontSize: '0.65rem', 
-                fontWeight: '800', 
-                letterSpacing: '0.05em', 
-                textTransform: 'uppercase' 
-              }}>
-                {restaurant.tagline}
-              </span>
-            )}
-            <span style={{ color: '#16a34a', fontWeight: '700', fontSize: '0.75rem' }}>FREE DELIVERY</span>
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </Link>
   );
 };

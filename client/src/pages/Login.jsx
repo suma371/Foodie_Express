@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, User } from 'lucide-react';
+import { Mail, Lock, ArrowRight, User, UtensilsCrossed } from 'lucide-react';
 import api from '../services/api';
 import { useAuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -26,44 +26,57 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 z-0">
+          <img 
+             src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2000" 
+             className="w-full h-full object-cover scale-110 blur-md grayscale" 
+             alt="bg" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-dark/95" />
+      </div>
+
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="auth-container"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="relative z-10 w-full max-w-md bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl"
       >
-        <div className="auth-header">
-           <h1>Login</h1>
-           <p style={{ color: '#64748b', fontWeight: '500' }}>Welcome back! Please enter your details.</p>
+        <div className="text-center mb-10">
+           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary text-white rounded-2xl shadow-xl shadow-primary/30 mb-6">
+              <UtensilsCrossed size={32} />
+           </div>
+           <h1 className="text-3xl font-black text-dark tracking-tighter uppercase italic">Welcome Back</h1>
+           <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mt-2">Log in to your Foodie Express account</p>
         </div>
 
-        <form className="auth-form-card" onSubmit={submitHandler} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="input-group">
-            <label className="input-label">Email</label>
-            <div className="input-icon-wrapper">
-              <Mail size={20} />
+        <form onSubmit={submitHandler} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Connection</label>
+            <div className="relative group">
+              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
               <input
                 type="email"
                 required
-                className="input-field-premium input-field-with-icon"
-                placeholder="Enter your email"
+                className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-black text-dark outline-none transition-all shadow-inner"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="input-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0.25rem' }}>
-               <label className="input-label" style={{ margin: '0' }}>Password</label>
-               <Link to="#" style={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--primary-brand)', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>Forgot?</Link>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center ml-1">
+               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Security Key</label>
+               <button type="button" className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">Forgot?</button>
             </div>
-            <div className="input-icon-wrapper">
-              <Lock size={20} />
+            <div className="relative group">
+              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
               <input
                 type="password"
                 required
-                className="input-field-premium input-field-with-icon"
+                className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-black text-dark outline-none transition-all shadow-inner"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -73,30 +86,29 @@ const Login = () => {
 
           <button
             type="submit"
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '1.25rem', borderRadius: '1rem', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginTop: '1rem' }}
+            className="w-full bg-primary hover:bg-primary-dark text-white py-5 rounded-2xl font-black shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 text-lg group mt-4 uppercase italic tracking-tighter"
           >
-            CONTINUE <ArrowRight size={20} style={{ strokeWidth: 3 }} />
+            CONTINUE <ArrowRight size={24} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
 
-        <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-          <p style={{ fontSize: '14px', fontWeight: '700', color: '#94a3b8' }}>
-            New to Foodie Express?{' '}
-            <Link to="/register" style={{ color: 'var(--primary-brand)', textDecoration: 'none', marginLeft: '0.25rem' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>
-              Create an account
+        <div className="mt-10 text-center">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-loose">
+            New to the family? <br/>
+            <Link to="/register" className="text-primary hover:underline text-xs">
+              CREATE YOUR ACCOUNT NOW
             </Link>
           </p>
         </div>
 
-        <div className="auth-divider">
-           <p style={{ fontSize: '10px', fontWeight: '900', color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.3em' }}>Or connect with</p>
-           <div className="social-login-grid">
-              <button className="social-btn">
-                 <img src="https://www.google.com/favicon.ico" alt="G" /> Google
+        <div className="mt-10 pt-10 border-t border-gray-50">
+           <p className="text-[9px] font-black text-gray-300 text-center uppercase tracking-[0.3em] mb-6">Or connect via</p>
+           <div className="grid grid-cols-2 gap-4">
+              <button className="flex items-center justify-center gap-3 py-4 border-2 border-gray-50 rounded-2xl hover:bg-gray-50 transition-all font-black text-xs uppercase tracking-tighter text-dark-muted">
+                 <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="G" /> Google
               </button>
-              <button className="social-btn">
-                 <img src="https://www.facebook.com/favicon.ico" alt="F" /> Facebook
+              <button className="flex items-center justify-center gap-3 py-4 border-2 border-gray-50 rounded-2xl hover:bg-gray-50 transition-all font-black text-xs uppercase tracking-tighter text-dark-muted">
+                 <img src="https://www.facebook.com/favicon.ico" className="w-4 h-4" alt="F" /> Facebook
               </button>
            </div>
         </div>

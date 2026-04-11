@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, ArrowRight, Store, ShieldCheck } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, Store, ShieldCheck, UtensilsCrossed } from 'lucide-react';
 import api from '../services/api';
 import { useAuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -34,29 +34,41 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute inset-0 z-0">
+          <img 
+             src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&q=80&w=2000" 
+             className="w-full h-full object-cover scale-110 blur-xl grayscale opacity-50" 
+             alt="bg" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/95 to-dark/95" />
+      </div>
+
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="auth-container"
-        style={{ maxWidth: '36rem' }}
+        className="relative z-10 w-full max-w-2xl bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl"
       >
-        <div className="auth-header">
-           <h1>Create Account</h1>
-           <p style={{ color: '#64748b', fontWeight: '500', fontSize: '18px' }}>Join the Foodie Express family today!</p>
+        <div className="text-center mb-10">
+           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary text-white rounded-2xl shadow-xl shadow-primary/30 mb-6">
+              <UtensilsCrossed size={32} />
+           </div>
+           <h1 className="text-3xl font-black text-dark tracking-tighter uppercase italic">Create Account</h1>
+           <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mt-2">Join the Foodie Express family today</p>
         </div>
 
-        <form className="auth-form-card" onSubmit={submitHandler} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <form onSubmit={submitHandler} className="space-y-8">
           
-          <div className="profile-form-grid">
-             <div className="input-group">
-               <label className="input-label">Full Name</label>
-               <div className="input-icon-wrapper">
-                 <User size={20} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className="space-y-2">
+               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+               <div className="relative group">
+                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                  <input
                    type="text"
                    required
-                   className="input-field-premium input-field-with-icon"
+                   className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-black text-dark outline-none transition-all shadow-inner"
                    placeholder="John Doe"
                    value={name}
                    onChange={(e) => setName(e.target.value)}
@@ -64,14 +76,14 @@ const Register = () => {
                </div>
              </div>
 
-             <div className="input-group">
-               <label className="input-label">Email</label>
-               <div className="input-icon-wrapper">
-                 <Mail size={20} />
+             <div className="space-y-2">
+               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+               <div className="relative group">
+                 <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                  <input
                    type="email"
                    required
-                   className="input-field-premium input-field-with-icon"
+                   className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-black text-dark outline-none transition-all shadow-inner"
                    placeholder="you@email.com"
                    value={email}
                    onChange={(e) => setEmail(e.target.value)}
@@ -80,15 +92,15 @@ const Register = () => {
              </div>
           </div>
 
-          <div className="profile-form-grid">
-             <div className="input-group">
-               <label className="input-label">Password</label>
-               <div className="input-icon-wrapper">
-                 <Lock size={20} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className="space-y-2">
+               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Secret Password</label>
+               <div className="relative group">
+                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                  <input
                    type="password"
                    required
-                   className="input-field-premium input-field-with-icon"
+                   className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-black text-dark outline-none transition-all shadow-inner"
                    placeholder="••••••••"
                    value={password}
                    onChange={(e) => setPassword(e.target.value)}
@@ -96,14 +108,14 @@ const Register = () => {
                </div>
              </div>
 
-             <div className="input-group">
-               <label className="input-label">Confirm</label>
-               <div className="input-icon-wrapper">
-                 <Lock size={20} />
+             <div className="space-y-2">
+               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Confirm Identity</label>
+               <div className="relative group">
+                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                  <input
                    type="password"
                    required
-                   className="input-field-premium input-field-with-icon"
+                   className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-black text-dark outline-none transition-all shadow-inner"
                    placeholder="••••••••"
                    value={confirmPassword}
                    onChange={(e) => setConfirmPassword(e.target.value)}
@@ -112,45 +124,47 @@ const Register = () => {
              </div>
           </div>
 
-          {/* Role Picker (Premium Style) */}
-          <div className="role-picker-container">
-             <p style={{ fontSize: '10px', fontWeight: '900', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.3em', marginBottom: '1rem' }}>I want to...</p>
-             <div className="role-picker-grid">
+          {/* Role Picker */}
+          <div className="space-y-4 pt-4">
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">In our ecosystem, I am a...</p>
+             <div className="grid grid-cols-2 gap-4">
                 <button 
                    type="button" 
                    onClick={() => setRole('user')}
-                   className={`role-btn user ${role === 'user' ? 'active' : ''}`}
+                   className={`p-6 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${role === 'user' ? 'bg-primary/5 border-primary text-primary shadow-xl shadow-primary/10' : 'bg-white border-gray-100 text-dark-muted hover:border-gray-200'}`}
                 >
-                   Eat Food
+                   <span className="text-2xl">🍔</span>
+                   <span className="text-xs font-black uppercase tracking-widest">HUNGRY EATER</span>
                 </button>
                 <button 
                    type="button" 
                    onClick={() => setRole('restaurant_owner')}
-                   className={`role-btn owner ${role === 'restaurant_owner' ? 'active' : ''}`}
+                   className={`p-6 rounded-[2rem] border-2 transition-all flex flex-col items-center gap-3 ${role === 'restaurant_owner' ? 'bg-primary/5 border-primary text-primary shadow-xl shadow-primary/10' : 'bg-white border-gray-100 text-dark-muted hover:border-gray-200'}`}
                 >
-                   Sell Food
+                   <span className="text-2xl">👨‍🍳</span>
+                   <span className="text-xs font-black uppercase tracking-widest">CHEF / OWNER</span>
                 </button>
              </div>
           </div>
 
           <button
             type="submit"
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '1.25rem', borderRadius: '1rem', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+            className="w-full bg-primary hover:bg-primary-dark text-white py-5 rounded-2xl font-black shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 text-lg group uppercase italic tracking-tighter"
           >
-            CREATE ACCOUNT <ArrowRight size={22} style={{ strokeWidth: 3 }} />
+            CREATE ACCOUNT <ArrowRight size={24} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
           </button>
 
-          <div className="secure-badge">
-             <ShieldCheck size={16} /> 256-bit Secure Encryption
+          <div className="flex items-center justify-center gap-2 text-green-600">
+             <ShieldCheck size={16} />
+             <span className="text-[9px] font-black uppercase tracking-widest">Secure 256-bit SSL encrypted registration</span>
           </div>
         </form>
 
-        <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-          <p style={{ fontSize: '14px', fontWeight: '700', color: '#94a3b8' }}>
-            Already have an account?{' '}
-            <Link to="/login" style={{ color: 'var(--primary-brand)', textDecoration: 'none', marginLeft: '0.25rem' }} onMouseOver={e => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={e => e.currentTarget.style.textDecoration = 'none'}>
-              Login here
+        <div className="mt-10 text-center">
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            Welcome back? <br/>
+            <Link to="/login" className="text-primary hover:underline text-xs">
+              GO TO LOGIN PAGE
             </Link>
           </p>
         </div>

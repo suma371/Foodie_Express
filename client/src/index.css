@@ -1,6 +1,28 @@
 /* ── DESIGN SYSTEM & RESET ── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap');
 
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #fc8019; /* Swiggy Orange */
+  --color-primary-dark: #e67010;
+  --color-primary-light: #fff5ed;
+  
+  --color-dark: #02060c; /* Swiggy Rich Black */
+  --color-dark-muted: #686b78; /* Swiggy Muted Grey */
+  --color-dark-light: #93959f;
+  
+  --color-success: #119119; /* Swiggy Rating Green */
+  --color-ice: #f0f0f5;
+  
+  --shadow-premium: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.1);
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem; /* 32px roughly */
+}
+
 :root {
   /* Colors - Zomato Red / Swiggy Orange Hybrid */
   --primary: #e23744;
