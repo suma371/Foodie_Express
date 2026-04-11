@@ -14,6 +14,8 @@ const RestaurantMenu = () => {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(0);
+  const [vegOnly, setVegOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [comment, setComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   
@@ -35,18 +37,14 @@ const RestaurantMenu = () => {
         setReviews(reviewRes.data || []);
       } catch (err) {
         console.error('Error fetching restaurant menu, using mock data:', err);
-        // Fallback to mock data
         const mockRest = mockRestaurants.find(r => r._id === id);
         if (mockRest) {
           setRestaurant(mockRest);
-          
-          // Provide generic food items if none exist for this specific mock restaurant ID
           const fallbackItems = mockFoodItems[id] && mockFoodItems[id].length > 0 ? mockFoodItems[id] : [
             { "_id": id + "f1", "name": "Chef's Special " + mockRest.name.split(' ')[0], "price": 399, "description": "Our signature dish prepared with the finest seasonal ingredients.", "category": "Special", "image": mockRest.image },
             { "_id": id + "f2", "name": "Classic Side Portion", "price": 149, "description": "A perfect accompaniment to round off your main course.", "category": "Veg", "image": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=600" },
             { "_id": id + "f3", "name": "Signature Dessert", "price": 199, "description": "Sweet conclusion to your meal.", "category": "Dessert", "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=600" }
           ];
-          
           setFoodItems(fallbackItems);
           setReviews([]);
         }
@@ -54,7 +52,6 @@ const RestaurantMenu = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
@@ -62,6 +59,13 @@ const RestaurantMenu = () => {
     addToCart(food);
     toast.success(`${food.name} added to cart!`);
   };
+
+  const filteredItems = foodItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesVeg = vegOnly ? item.category === 'Veg' : true;
+    return matchesSearch && matchesVeg;
+  });
 
   const submitReviewHandler = async (e) => {
     e.preventDefault();
@@ -75,7 +79,6 @@ const RestaurantMenu = () => {
       await api.post(`/restaurants/${id}/reviews`, { rating, comment });
       toast.success('Review submitted successfully!');
       
-      // Refresh reviews and restaurant data (for new average rating)
       const [reviewRes, restaurantRes] = await Promise.all([
         api.get(`/restaurants/${id}/reviews`),
         api.get(`/restaurants/${id}`)
@@ -106,9 +109,9 @@ const RestaurantMenu = () => {
     <div className="min-h-screen bg-white">
       {/* Breadcrumbs */}
       <div className="page-container" style={{ padding: '1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '11px', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-         <span style={{ cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.color = 'var(--primary-brand)'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>Home</span>
+         <Link to="/" style={{ color: '#94a3b8', textDecoration: 'none' }}>Home</Link>
          <ChevronRight size={12} />
-         <span style={{ cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.color = 'var(--primary-brand)'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>Mumbai</span>
+         <span style={{ color: '#94a3b8' }}>Mumbai</span>
          <ChevronRight size={12} />
          <span style={{ color: '#0f172a' }}>{restaurant.name}</span>
       </div>
@@ -118,7 +121,7 @@ const RestaurantMenu = () => {
         {/* Premium Restaurant Header */}
         <header className="menu-header-premium">
            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', justifyContent: 'space-between', alignItems: 'flex-start' }} className="md-flex-row">
-              <div>
+              <div style={{ flex: 1 }}>
                  <h1 className="results-title" style={{ fontSize: '36px', marginBottom: '0.5rem' }}>{restaurant.name}</h1>
                  <p style={{ color: '#64748b', fontWeight: '500', marginBottom: '1rem' }}>North Indian, Chinese, Continental</p>
                  <p style={{ color: '#94a3b8', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -127,7 +130,7 @@ const RestaurantMenu = () => {
               </div>
 
               <div style={{ display: 'flex', gap: '1rem' }}>
-                 <div className="white-card" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '1rem' }}>
+                 <div className="white-card" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '1rem', minWidth: '80px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#15803d', fontWeight: '900', fontSize: '18px' }}>
                        {restaurant.rating?.toFixed(1) || '0.0'} <Star size={16} style={{ fill: 'currentColor' }} />
                     </div>
@@ -136,7 +139,7 @@ const RestaurantMenu = () => {
                        {reviews.length}+ <br/> Ratings
                     </div>
                  </div>
-                 <div className="white-card" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '1rem' }}>
+                 <div className="white-card" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderRadius: '1rem', minWidth: '80px' }}>
                     <div style={{ color: '#0f172a', fontWeight: '900', fontSize: '18px', textAlign: 'center' }}>
                        35
                     </div>
@@ -161,6 +164,33 @@ const RestaurantMenu = () => {
            </div>
         </header>
 
+        {/* Filters and Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', margin: '2rem 0', padding: '1rem 0', borderBottom: '1px solid #f1f5f9' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={() => setVegOnly(!vegOnly)}>
+              <div style={{ 
+                 width: '40px', height: '20px', borderRadius: '20px', backgroundColor: vegOnly ? '#16a34a' : '#e2e8f0', 
+                 position: 'relative', transition: 'background-color 0.2s' 
+              }}>
+                 <div style={{ 
+                    position: 'absolute', top: '2px', left: vegOnly ? '22px' : '2px', width: '16px', height: '16px', 
+                    borderRadius: '50%', backgroundColor: 'white', transition: 'left 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                 }}></div>
+              </div>
+              <span style={{ fontSize: '14px', fontWeight: '800', color: vegOnly ? '#16a34a' : '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Veg Only</span>
+           </div>
+           <div style={{ flex: 1, position: 'relative' }}>
+              <Search style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={18} />
+              <input 
+                 type="text" 
+                 placeholder="Search in menu..." 
+                 className="input-field-premium"
+                 style={{ paddingLeft: '3rem', width: '100%', maxWidth: '300px', backgroundColor: '#f8fafc' }}
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+              />
+           </div>
+        </div>
+
         {/* Menu Section with Sidebar Mockup */}
         <div style={{ display: 'flex', gap: '3rem', paddingBottom: '8rem' }} className="flex-col lg-flex-row">
            
@@ -181,17 +211,15 @@ const RestaurantMenu = () => {
 
            {/* Menu Items */}
            <main style={{ flexGrow: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
-                 <h2 className="results-title" style={{ fontSize: '24px' }}>Recommended Items ({foodItems.length})</h2>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#f1f5f9', padding: '0.5rem 1rem', borderRadius: '0.75rem', color: '#475569', cursor: 'pointer' }}>
-                    <Search size={18} />
-                    <span style={{ fontSize: '14px', fontWeight: '700' }}>Search in menu</span>
-                 </div>
+              <div style={{ marginBottom: '2.5rem' }}>
+                 <h2 className="results-title" style={{ fontSize: '24px' }}>
+                    {vegOnly ? 'Pure Veg' : 'Recommended'} ({filteredItems.length})
+                 </h2>
               </div>
 
-               <div>
-                  {foodItems.length > 0 ? (
-                     foodItems.map((food) => (
+               <div style={{ minHeight: '400px' }}>
+                  {filteredItems.length > 0 ? (
+                     filteredItems.map((food) => (
                         <motion.div 
                            key={food._id} 
                            initial={{ opacity: 0, y: 20 }}

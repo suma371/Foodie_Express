@@ -1492,3 +1492,105 @@ button {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ── LOCATION MODAL ── */
+.location-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 2rem;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 2001;
+}
+
+.location-modal input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.location-modal input:focus {
+  background-color: white;
+  border-color: var(--primary-brand);
+  box-shadow: 0 10px 15px -3px rgba(226, 55, 68, 0.1);
+}
+
+/* ── MENU ITEM REFINEMENTS ── */
+.menu-item-row-large {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2.5rem 0;
+  border-bottom: 1.5px solid #f1f5f9;
+  transition: transform 0.3s ease;
+}
+
+.menu-item-row-large:hover {
+  transform: translateX(10px);
+}
+
+.menu-item-img-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.menu-item-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.add-btn-floating {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  color: #16a34a;
+  padding: 0.6rem 2.2rem;
+  border-radius: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-btn-floating:hover {
+  background-color: #f0fdf4;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ── NAVIGATION REFINEMENTS ── */
+.navbar-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 2rem;
+}
+
+.navbar-location:hover {
+  background: white;
+  border-color: var(--primary-brand);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.location-text {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
