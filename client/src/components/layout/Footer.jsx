@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { UtensilsCrossed, Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
+import { UtensilsCrossed, Facebook, Twitter, Instagram, Youtube, ArrowRight } from 'lucide-react';
 
 const footerLinks = {
   Company: [
@@ -23,37 +23,39 @@ const footerLinks = {
   ],
 };
 
-const cities = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Gurgaon', 'Noida'
-];
+const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Gurgaon', 'Noida'];
 
 const Footer = () => {
   return (
-    <footer className="bg-[#02060c] text-white pt-16 pb-20 mt-20">
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8">
-        
-        {/* Top Section: Brand & Links */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-          
-          {/* Brand */}
-          <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-4 group">
-               <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                  <UtensilsCrossed size={24} className="text-white" />
-               </div>
-               <span className="text-2xl font-black tracking-tighter uppercase italic leading-none">FOODIE<br/>EXPRESS</span>
+    <footer className="bg-[#02060c] text-white pt-12 sm:pt-16 pb-10 sm:pb-16 mt-16 sm:mt-20">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* ── Top: Brand + Link Columns ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-12 sm:mb-16">
+
+          {/* Brand (full width on mobile) */}
+          <div className="col-span-2 sm:col-span-2 lg:col-span-1 space-y-4 mb-4 sm:mb-0">
+            <Link to="/" className="inline-flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                <UtensilsCrossed size={20} className="text-white" />
+              </div>
+              <span className="text-xl font-black tracking-tighter uppercase italic leading-none">
+                Foodie<br />Express
+              </span>
             </Link>
-            <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">© 2026 TECHNOLOGY PVT. LTD</p>
+            <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
+              © 2026 FoodieExpress Pvt. Ltd
+            </p>
           </div>
 
-          {/* Map Links */}
+          {/* Link Columns */}
           {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title} className="space-y-6">
-              <h4 className="text-xs font-black uppercase tracking-[0.25em] text-white/90">{title}</h4>
-              <ul className="space-y-4">
+            <div key={title} className="space-y-4">
+              <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80">{title}</h4>
+              <ul className="space-y-2.5">
                 {links.map(link => (
                   <li key={link.label}>
-                    <Link to={link.to} className="text-sm font-bold text-white/50 hover:text-primary transition-colors uppercase tracking-tight italic">
+                    <Link to={link.to} className="text-sm font-semibold text-white/40 hover:text-primary transition-colors">
                       {link.label}
                     </Link>
                   </li>
@@ -63,45 +65,43 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Deliver To Cities */}
-        <div className="border-t border-white/5 pt-16 mb-20">
-           <h4 className="text-xs font-black uppercase tracking-[0.25em] text-white/90 mb-10">We deliver to:</h4>
-           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-y-6 gap-x-12">
-              {cities.map(city => (
-                <Link key={city} to="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors uppercase tracking-tight italic">
-                   {city}
-                </Link>
-              ))}
-              <Link to="#" className="text-sm font-black text-primary hover:text-primary-dark transition-colors uppercase tracking-[0.1em] flex items-center gap-2">
-                 650+ CITIES <ArrowRight size={14} />
+        {/* ── Cities ── */}
+        <div className="border-t border-white/5 pt-8 sm:pt-12 mb-10 sm:mb-14">
+          <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80 mb-5 sm:mb-6">We deliver to</h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-3">
+            {cities.map(city => (
+              <Link key={city} to="#" className="text-sm font-semibold text-white/35 hover:text-white transition-colors">
+                {city}
               </Link>
-           </div>
+            ))}
+            <Link to="#" className="text-sm font-black text-primary hover:text-primary-dark transition-colors flex items-center gap-1.5">
+              650+ Cities <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
 
-        {/* App Links & Social */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12 border-t border-white/5 pt-16">
-           <div className="flex flex-wrap items-center justify-center gap-6">
-              <button className="h-10 px-6 border border-white/10 rounded-xl hover:bg-white/5 transition-colors flex items-center gap-3">
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" className="h-full py-2" alt="AppStore" />
-              </button>
-              <button className="h-10 px-6 border border-white/10 rounded-xl hover:bg-white/5 transition-colors flex items-center gap-3">
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" className="h-full py-2" alt="GooglePlay" />
-              </button>
-           </div>
+        {/* ── Bottom: App Buttons + Social ── */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-white/5 pt-8">
+          {/* App Badges */}
+          <div className="flex items-center gap-4">
+            <a href="#" className="h-10 px-4 border border-white/10 rounded-lg hover:bg-white/5 transition-colors flex items-center">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" className="h-6" alt="App Store" />
+            </a>
+            <a href="#" className="h-10 px-4 border border-white/10 rounded-lg hover:bg-white/5 transition-colors flex items-center">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" className="h-6" alt="Google Play" />
+            </a>
+          </div>
 
-           <div className="flex items-center gap-8">
-              {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="p-3 bg-white/5 hover:bg-primary rounded-2xl text-white transition-all transform hover:scale-110 active:scale-90">
-                  <Icon size={20} />
-                </a>
-              ))}
-           </div>
+          {/* Social Icons */}
+          <div className="flex items-center gap-3">
+            {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
+              <a key={i} href="#" className="p-2.5 bg-white/5 hover:bg-primary rounded-xl text-white/70 hover:text-white transition-all hover:scale-110 active:scale-90">
+                <Icon size={18} />
+              </a>
+            ))}
+          </div>
         </div>
 
-        {/* Global Tagline */}
-        <div className="mt-24 text-center">
-           <h5 className="text-[100px] md:text-[180px] font-black text-white/[0.02] leading-none select-none pointer-events-none uppercase italic tracking-tighter">SWIGGY INSPIRED</h5>
-        </div>
       </div>
     </footer>
   );

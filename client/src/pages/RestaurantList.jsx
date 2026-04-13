@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal, X, MapPin, ChevronDown, Loader2 } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import RestaurantCard from '../components/restaurant/RestaurantCard';
@@ -13,140 +13,142 @@ const RestaurantList = () => {
   const [activeFilters, setActiveFilters] = useState([]);
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const { data } = await api.get('/restaurants');
-        setRestaurants(data);
-      } catch (err) {
-        console.error('API failed:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRestaurants();
+    api.get('/restaurants')
+      .then(({ data }) => setRestaurants(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const filtered = restaurants.filter(r => {
-    const matchSearch = r.name.toLowerCase().includes(search.toLowerCase());
-    return matchSearch;
-  });
+  const filtered = restaurants.filter(r =>
+    r.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   const toggleFilter = (f) => {
-    setActiveFilters(prev => 
-      prev.includes(f) ? prev.filter(item => item !== f) : [...prev, f]
+    setActiveFilters(prev =>
+      prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]
     );
   };
 
   return (
     <div className="bg-white min-h-screen">
-      
-      {/* Search Header */}
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8 pt-10 pb-6 border-b border-gray-100">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-           <div className="max-w-xl">
-              <nav className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] text-dark-light uppercase mb-4 italic">
-                 <span>Home</span> <ChevronDown size={10} className="-rotate-90" /> <span>Mumbai</span> <ChevronDown size={10} className="-rotate-90" /> <span className="text-dark">Explore</span>
-              </nav>
-              <h1 className="text-3xl md:text-5xl font-black text-dark tracking-tighter uppercase italic leading-tight">
-                 Restaurants in Mumbai
-              </h1>
-           </div>
-           
-           <div className="w-full md:w-96 relative group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-dark-light group-focus-within:text-primary transition-colors" size={20} />
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search for your favorite meals.."
-                className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-[1.5rem] py-4 pl-14 pr-6 font-black text-dark outline-none transition-all shadow-inner"
-              />
-           </div>
+
+      {/* ── Search Header ── */}
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-5 border-b border-gray-100">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-5">
+          <div>
+            <nav className="flex items-center gap-1.5 text-[10px] font-black text-dark-light uppercase tracking-[0.15em] mb-3 italic">
+              <span>Home</span>
+              <ChevronDown size={10} className="-rotate-90" />
+              <span>Mumbai</span>
+              <ChevronDown size={10} className="-rotate-90" />
+              <span className="text-dark">Explore</span>
+            </nav>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-dark tracking-tighter uppercase italic leading-tight">
+              Restaurants in Mumbai
+            </h1>
+          </div>
+
+          <div className="w-full md:w-80 lg:w-96 relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search for restaurants.."
+              className="w-full bg-gray-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-xl py-3 pl-11 pr-5 font-semibold text-sm text-dark outline-none transition-all"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Modern Filter Chips Bar (Sticky) */}
-      <div className="sticky top-20 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 mb-12 shadow-sm">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-5 flex items-center justify-between">
-           <div className="flex items-center gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
-             <button className="flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-gray-100 rounded-full font-black text-xs text-dark uppercase tracking-widest hover:border-dark-muted transition-all shadow-sm">
-                Filter <SlidersHorizontal size={14} strokeWidth={3} />
-             </button>
-             {FILTERS.map(f => (
-               <button
-                 key={f}
-                 onClick={() => toggleFilter(f)}
-                 className={`whitespace-nowrap px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest transition-all border-2 ${activeFilters.includes(f) ? 'bg-dark text-white border-dark shadow-lg' : 'bg-white border-gray-100 text-dark-muted hover:border-dark-muted shadow-sm'}`}
-               >
-                 {f}
-               </button>
-             ))}
-           </div>
-           
-           <div className="hidden lg:flex items-center gap-2 text-[10px] font-black text-dark-muted uppercase tracking-[0.1em]">
-              SORT BY: <span className="text-primary font-black cursor-pointer flex items-center gap-1">RELEVANCE <ChevronDown size={14} /></span>
-           </div>
+      {/* ── Filter Bar (sticky) ── */}
+      <div className="sticky top-16 sm:top-[72px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+            <button className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-white border-2 border-gray-200 rounded-full font-black text-[11px] text-dark uppercase tracking-wider hover:border-dark-muted transition-all shadow-sm">
+              Filter <SlidersHorizontal size={12} strokeWidth={3} />
+            </button>
+            {FILTERS.map(f => (
+              <button
+                key={f}
+                onClick={() => toggleFilter(f)}
+                className={`flex-shrink-0 whitespace-nowrap px-4 py-2 rounded-full font-black text-[11px] uppercase tracking-wider border-2 transition-all ${
+                  activeFilters.includes(f)
+                    ? 'bg-dark text-white border-dark'
+                    : 'bg-white border-gray-200 text-dark-muted hover:border-dark-muted shadow-sm'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-black text-dark-muted uppercase tracking-wider flex-shrink-0">
+            Sort:
+            <span className="text-primary cursor-pointer flex items-center gap-0.5">
+              Relevance <ChevronDown size={12} />
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-4 md:px-8 pb-32">
-        
-        {/* Results Info */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4">
-           <div>
-              <h2 className="text-2xl font-black text-dark tracking-tighter uppercase italic">
-                 {loading ? 'Finding the best spots...' : `${filtered.length} CURATED RESULTS`}
-              </h2>
-              {search && <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Showing results for "{search}"</p>}
-           </div>
-           <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic border-l-2 border-primary pl-4">Delivery in under 30 mins</p>
+      {/* ── Results ── */}
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-20">
+
+        {/* Result Count */}
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h2 className="text-lg sm:text-xl font-black text-dark tracking-tighter uppercase italic">
+            {loading ? 'Finding the best spots...' : `${filtered.length} results`}
+          </h2>
+          {search && (
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              Showing results for "{search}"
+            </p>
+          )}
         </div>
 
-        {/* Restaurant Grid */}
+        {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="animate-pulse flex flex-col gap-4">
-                 <div className="aspect-[4/3] bg-gray-50 rounded-[2rem] border border-gray-100" />
-                 <div className="space-y-3 px-2">
-                    <div className="h-6 bg-gray-50 rounded-lg w-3/4" />
-                    <div className="h-4 bg-gray-50 rounded-lg w-1/2" />
-                 </div>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="animate-pulse flex flex-col gap-3">
+                <div className="aspect-[4/3] bg-gray-100 rounded-2xl" />
+                <div className="space-y-2 px-1">
+                  <div className="h-4 bg-gray-100 rounded w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                </div>
               </div>
             ))}
           </div>
         ) : filtered.length > 0 ? (
-          <motion.div
-            layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12"
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <AnimatePresence>
-              {filtered.map(r => (
-                <motion.div 
-                   key={r._id}
-                   layout
-                   initial={{ opacity: 0, scale: 0.95 }}
-                   animate={{ opacity: 1, scale: 1 }}
-                   exit={{ opacity: 0, scale: 0.95 }}
+              {filtered.map((r, i) => (
+                <motion.div
+                  key={r._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.03 }}
                 >
-                   <RestaurantCard restaurant={r} />
+                  <RestaurantCard restaurant={r} />
                 </motion.div>
               ))}
             </AnimatePresence>
-          </motion.div>
+          </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-40 text-center bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-100">
-            <div className="w-32 h-32 bg-white rounded-[2.5rem] flex items-center justify-center text-5xl mb-10 shadow-xl">
-               🍴
-            </div>
-            <h3 className="text-3xl font-black text-dark tracking-tighter uppercase italic mb-4">No results for your taste</h3>
-            <p className="text-dark-muted font-bold uppercase tracking-widest text-xs mb-10 opacity-70">
-               Try refining your search or explore our top categories.
+          <div className="flex flex-col items-center justify-center py-24 text-center bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+            <div className="text-5xl mb-6">🍴</div>
+            <h3 className="text-xl font-black text-dark tracking-tighter uppercase italic mb-2">
+              No results found
+            </h3>
+            <p className="text-xs text-dark-muted font-semibold mb-6">
+              Try adjusting your search or explore our top categories.
             </p>
-            <button 
+            <button
               onClick={() => setSearch('')}
-              className="bg-primary text-white px-12 py-5 rounded-2xl font-black shadow-2xl shadow-primary/30 transition-all hover:scale-[1.05] active:scale-95 uppercase italic tracking-tighter"
+              className="bg-primary text-white px-8 py-3 rounded-xl font-black shadow-lg shadow-primary/25 uppercase italic tracking-tighter text-sm hover:bg-primary-dark transition-colors active:scale-95"
             >
-              BROWSE ALL RESTAURANTS
+              Browse All
             </button>
           </div>
         )}

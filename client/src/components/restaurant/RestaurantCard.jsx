@@ -1,57 +1,58 @@
 import { Link } from 'react-router-dom';
-import { Star, Clock } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
 
 const RestaurantCard = ({ restaurant }) => {
-  // Swiggy Rating Color logic
-  const ratingColor = restaurant.rating >= 4 ? 'bg-success' : 'bg-orange-400';
+  const ratingColor = restaurant.rating >= 4 ? 'text-green-600' : 'text-orange-500';
 
   return (
     <Link to={`/restaurant/${restaurant._id}`} className="group block">
-      <motion.div 
-        whileHover={{ scale: 0.96 }}
-        className="flex flex-col gap-3 transition-transform"
-      >
-        {/* Image Container */}
-        <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-sm group-hover:shadow-xl transition-all border border-gray-100">
+      <div className="transition-transform duration-200 group-hover:scale-[0.97]">
+        {/* Image */}
+        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-3 border border-gray-100">
           <img
             src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800'}
             alt={restaurant.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
           />
-          {/* Discount Overlay (Swiggy Style) */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90" />
-          <div className="absolute bottom-3 left-4 right-4">
-             <p className="text-white font-black text-lg xl:text-xl tracking-tighter uppercase italic leading-none truncate">
-                {restaurant.offers?.[0] || 'Items at ₹129'}
-             </p>
+          {/* Gradient + Offer */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-3">
+            <p className="text-white font-black text-sm leading-tight truncate uppercase italic">
+              {restaurant.offers?.[0] || '₹125 off on first order'}
+            </p>
           </div>
+          {/* Promoted Badge */}
+          {restaurant.isPromoted && (
+            <div className="absolute top-2 left-2 bg-white/90 text-dark text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wide">
+              Promoted
+            </div>
+          )}
         </div>
 
-        {/* Info Content */}
-        <div className="px-2">
-          <h3 className="text-lg font-black text-dark tracking-tight leading-tight mb-1 truncate group-hover:text-primary transition-colors uppercase italic">
+        {/* Info */}
+        <div className="px-0.5">
+          <h3 className="text-sm sm:text-base font-black text-dark tracking-tight leading-tight mb-1 truncate group-hover:text-primary transition-colors uppercase italic">
             {restaurant.name}
           </h3>
-          
-          <div className="flex items-center gap-1.5 text-sm font-black text-dark tracking-tighter mb-1 uppercase">
-            <div className={`flex items-center gap-1 text-white ${ratingColor} p-1 rounded-full scale-90`}>
-              <Star size={12} fill="currentColor" />
-            </div>
-            <span>{restaurant.rating || '4.2'}</span>
+
+          <div className="flex items-center gap-1.5 text-xs font-bold text-dark mb-1">
+            <span className={`flex items-center gap-0.5 font-black ${ratingColor}`}>
+              <Star size={11} fill="currentColor" />
+              {restaurant.rating || '4.2'}
+            </span>
             <span className="text-gray-300">•</span>
-            <span className="flex items-center gap-1">{restaurant.deliveryTime || '25-30'} MINS</span>
+            <span className="text-dark-muted">{restaurant.deliveryTime || '25-30'} mins</span>
           </div>
 
-          <div className="text-xs font-bold text-dark-muted tracking-tight truncate mb-1">
-            {restaurant.cuisines?.slice(0, 3).join(', ') || 'North Indian, Chinese, Mughlai'}
-          </div>
-
-          <div className="text-xs font-bold text-dark-light tracking-wide uppercase italic">
-            {restaurant.address?.city || 'Downtown Central'}
-          </div>
+          <p className="text-xs text-dark-muted font-semibold truncate">
+            {restaurant.cuisines?.slice(0, 3).join(', ') || 'North Indian, Chinese'}
+          </p>
+          <p className="text-xs text-gray-400 font-semibold uppercase italic mt-0.5">
+            {restaurant.address?.city || 'Downtown'}
+          </p>
         </div>
-      </motion.div>
+      </div>
     </Link>
   );
 };
