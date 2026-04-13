@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { useAuthContext } from '../../context/AuthContext';
-import { Plus, Store, Utensils, ClipboardList, Settings, TrendingUp, Trash2 } from 'lucide-react';
+import { Plus, Store, Utensils, ClipboardList, Settings, TrendingUp, Trash2, Edit3 } from 'lucide-react';
 import AddRestaurantModal from '../../components/admin/AddRestaurantModal';
 import AddFoodItemModal from '../../components/admin/AddFoodItemModal';
+import EditRestaurantModal from '../../components/admin/EditRestaurantModal';
+import EditFoodItemModal from '../../components/admin/EditFoodItemModal';
 
 const AdminDashboard = () => {
   const { user } = useAuthContext();
@@ -17,6 +19,12 @@ const AdminDashboard = () => {
   // Modal States
   const [isRestModalOpen, setIsRestModalOpen] = useState(false);
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
+  const [isEditRestModalOpen, setIsEditRestModalOpen] = useState(false);
+  const [isEditFoodModalOpen, setIsEditFoodModalOpen] = useState(false);
+  
+  // Selected Objects for Editing
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [selectedFoodItem, setSelectedFoodItem] = useState(null);
 
   const fetchAdminData = async () => {
     try {
@@ -178,9 +186,20 @@ const AdminDashboard = () => {
                         <span style={{ backgroundColor: '#f0fdf4', color: '#15803d', padding: '0.125rem 0.5rem', borderRadius: '0.25rem', fontSize: '12px', fontWeight: '700' }}>★ {res.rating}</span>
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        <button className="icon-btn-danger" style={{ padding: '0.5rem', borderRadius: '0.5rem' }} onClick={() => handleDeleteRestaurant(res._id)}>
-                          <Trash2 size={18} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                          <button 
+                            className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                            onClick={() => {
+                              setSelectedRestaurant(res);
+                              setIsEditRestModalOpen(true);
+                            }}
+                          >
+                            <Edit3 size={18} />
+                          </button>
+                          <button className="icon-btn-danger" style={{ padding: '0.5rem', borderRadius: '0.5rem' }} onClick={() => handleDeleteRestaurant(res._id)}>
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -212,9 +231,20 @@ const AdminDashboard = () => {
                       <td style={{ color: '#64748b', fontSize: '14px' }}>{food.category}</td>
                       <td style={{ fontWeight: '700', color: '#0f172a' }}>₹{food.price.toFixed(0)}</td>
                       <td style={{ textAlign: 'right' }}>
-                        <button className="icon-btn-danger" style={{ padding: '0.5rem', borderRadius: '0.5rem' }} onClick={() => handleDeleteFood(food._id)}>
-                          <Trash2 size={18} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                          <button 
+                            className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all"
+                            onClick={() => {
+                              setSelectedFoodItem(food);
+                              setIsEditFoodModalOpen(true);
+                            }}
+                          >
+                            <Edit3 size={18} />
+                          </button>
+                          <button className="icon-btn-danger" style={{ padding: '0.5rem', borderRadius: '0.5rem' }} onClick={() => handleDeleteFood(food._id)}>
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -294,6 +324,24 @@ const AdminDashboard = () => {
         onClose={() => setIsFoodModalOpen(false)} 
         onSuccess={fetchAdminData}
         restaurants={restaurants}
+      />
+      <EditRestaurantModal 
+        isOpen={isEditRestModalOpen}
+        onClose={() => {
+          setIsEditRestModalOpen(false);
+          setSelectedRestaurant(null);
+        }}
+        onSuccess={fetchAdminData}
+        restaurant={selectedRestaurant}
+      />
+      <EditFoodItemModal 
+        isOpen={isEditFoodModalOpen}
+        onClose={() => {
+          setIsEditFoodModalOpen(false);
+          setSelectedFoodItem(null);
+        }}
+        onSuccess={fetchAdminData}
+        foodItem={selectedFoodItem}
       />
     </div>
   );

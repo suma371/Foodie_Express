@@ -11,9 +11,21 @@ const {
 } = require('../controllers/restaurantController');
 const { protect, restaurantOwner } = require('../middleware/authMiddleware');
 
+const { check } = require('express-validator');
+const { validate } = require('../middleware/validatorMiddleware');
+
 router.route('/')
   .get(getRestaurants)
-  .post(protect, restaurantOwner, createRestaurant);
+  .post(
+    protect, 
+    restaurantOwner, 
+    [
+      check('name', 'Restaurant name is required').not().isEmpty(),
+      check('address', 'Address is required').not().isEmpty(),
+    ],
+    validate,
+    createRestaurant
+  );
 
 router.route('/:id')
   .get(getRestaurantById)

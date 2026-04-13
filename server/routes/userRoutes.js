@@ -9,8 +9,30 @@ const {
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
-router.post('/', registerUser);
-router.post('/login', authUser);
+const { check } = require('express-validator');
+const { validate } = require('../middleware/validatorMiddleware');
+
+router.post(
+  '/',
+  [
+    check('name', 'Name is required').not().isEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
+  ],
+  validate,
+  registerUser
+);
+
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists(),
+  ],
+  validate,
+  authUser
+);
+
 router.post('/logout', logoutUser);
 router
   .route('/profile')
