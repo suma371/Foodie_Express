@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useCartContext } from '../context/CartContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { Star, Clock, Search, MapPin, ChevronRight, ChevronDown, Plus, Minus, Loader2, ShoppingCart } from 'lucide-react';
+import { Star, Clock, Search, MapPin, ChevronRight, Plus, Minus, Loader2, ShoppingCart, Percent } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const RestaurantMenu = () => {
@@ -51,82 +51,82 @@ const RestaurantMenu = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center flex-col gap-4">
-      <Loader2 className="animate-spin text-primary" size={40} />
-      <p className="text-xs font-black text-dark uppercase tracking-[0.4em]">Cooking your menu...</p>
+    <div className="min-h-screen flex items-center justify-center flex-col gap-6">
+      <Loader2 className="animate-spin text-[#FF7043]" size={48} />
+      <p className="text-sm font-heading font-bold text-gray-500 uppercase tracking-widest">Preparing the Menu...</p>
     </div>
   );
 
   if (!restaurant) return (
-    <div className="p-20 text-center font-bold text-dark-muted">Restaurant not found.</div>
+    <div className="min-h-screen flex items-center justify-center text-center font-heading text-xl font-bold text-gray-400">
+      Restaurant not found
+    </div>
   );
 
   return (
-    <div className="bg-white min-h-screen">
-
-      {/* Breadcrumbs */}
-      <div className="max-w-[860px] mx-auto px-4 pt-5 flex items-center gap-1.5 text-[10px] font-black text-dark-light uppercase tracking-widest flex-wrap">
-        <Link to="/" className="hover:text-dark">Home</Link>
-        <ChevronRight size={10} />
-        <Link to="/restaurants" className="hover:text-dark">{restaurant?.address?.city || 'Mumbai'}</Link>
-        <ChevronRight size={10} />
-        <span className="text-dark-muted truncate">{restaurant?.name}</span>
+    <div className="bg-[#FAFAFA] min-h-screen pb-32">
+      
+      {/* ── Breadcrumbs ── */}
+      <div className="bg-white border-b border-gray-100/60 sticky top-0 md:top-[90px] z-20">
+        <div className="max-w-[900px] mx-auto px-6 py-4 flex items-center gap-2 text-xs font-semibold text-gray-400">
+          <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
+          <ChevronRight size={12} />
+          <Link to="/restaurants" className="hover:text-gray-900 transition-colors">{restaurant?.address?.city || 'City'}</Link>
+          <ChevronRight size={12} />
+          <span className="text-gray-900 truncate">{restaurant?.name}</span>
+        </div>
       </div>
 
-      <div className="max-w-[860px] mx-auto px-4 pb-32 pt-6">
+      <div className="max-w-[900px] mx-auto px-6 pt-10">
 
-        {/* ── Restaurant Header ── */}
-        <div className="mb-8 sm:mb-12">
-          <div className="flex justify-between items-start gap-4 mb-5">
+        {/* ── Restaurant Header Card ── */}
+        <div className="bg-white rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100/50 mb-10">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-black text-dark tracking-tighter uppercase italic mb-1 leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-heading font-black text-gray-900 tracking-tight leading-tight mb-2">
                 {restaurant?.name}
               </h1>
-              <p className="text-xs sm:text-sm font-semibold text-dark-muted italic truncate">
+              <p className="text-sm sm:text-base font-semibold text-gray-500 truncate mb-4">
                 {restaurant?.cuisines?.join(', ')}
               </p>
-              <div className="flex items-center gap-2 text-xs font-semibold text-dark-muted mt-1.5">
-                <MapPin size={12} className="text-primary flex-shrink-0" />
-                <span className="truncate">{restaurant?.address?.city}, 1.2 km</span>
+              <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-gray-500">
+                <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+                   <Clock size={16} className="text-[#FF7043]" />
+                   <span>{restaurant.deliveryTime || '25-30'} mins</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+                   <MapPin size={16} className="text-[#FF7043]" />
+                   <span>{restaurant?.address?.city}, 1.2 km</span>
+                </div>
               </div>
             </div>
 
             {/* Rating Box */}
-            <div className="border border-gray-200 rounded-2xl px-4 py-3 text-center shadow-sm flex-shrink-0">
-              <div className="flex items-center gap-1 text-green-600 font-black border-b border-gray-100 pb-2 mb-1.5 justify-center">
-                <Star size={14} fill="currentColor" />
-                <span className="text-sm">{restaurant?.rating || '4.2'}</span>
+            <div className="bg-[#10B981] text-white rounded-2xl px-5 py-4 text-center shadow-lg shadow-emerald-500/20 flex-shrink-0 flex sm:flex-col items-center gap-2 sm:gap-1">
+              <div className="flex items-center gap-1 font-heading font-black text-xl">
+                <Star size={18} fill="currentColor" />
+                <span>{restaurant?.rating || '4.2'}</span>
               </div>
-              <span className="text-[9px] font-black text-dark-muted uppercase tracking-tight">1K+ ratings</span>
-            </div>
-          </div>
-
-          {/* Meta Row */}
-          <div className="flex items-center gap-6 py-4 border-t border-dashed border-gray-200">
-            <div className="flex items-center gap-2 text-xs font-black text-dark uppercase italic">
-              <div className="w-6 h-6 rounded-full bg-dark text-white flex items-center justify-center">
-                <Clock size={12} />
+              <div className="w-px h-10 bg-white/20 sm:hidden"></div>
+              <div className="sm:border-t sm:border-white/20 sm:pt-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-90">1K+ Ratings</span>
               </div>
-              30 Mins
-            </div>
-            <div className="flex items-center gap-2 text-xs font-black text-dark uppercase italic">
-              <div className="w-6 h-6 rounded-full bg-dark text-white flex items-center justify-center text-[10px] font-serif">₹</div>
-              ₹400 for Two
             </div>
           </div>
 
           {/* Coupon Chips */}
-          <div className="flex gap-3 overflow-x-auto no-scrollbar py-3 -mx-4 px-4">
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pt-8 mt-8 border-t border-dashed border-gray-200">
             {[
-              { label: '60% OFF UPTO ₹120', code: 'STEAL60', icon: '🎁' },
-              { label: 'FLAT ₹100 OFF', code: 'SAVE100', icon: '💰' },
-              { label: 'EXTRA 20% OFF', code: 'ICICI20', icon: '💳' }
+              { label: '60% OFF UPTO ₹120', code: 'STEAL60', icon: <Percent size={20}/> },
+              { label: 'FLAT ₹100 OFF', code: 'SAVE100', icon: <Percent size={20}/> },
             ].map((c, i) => (
-              <div key={i} className="flex-shrink-0 flex items-center gap-2.5 border border-gray-100 rounded-2xl px-4 py-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-[180px]">
-                <span className="text-lg">{c.icon}</span>
+              <div key={i} className="flex-shrink-0 flex items-center gap-3 border border-gray-200/60 bg-gray-50/50 rounded-xl px-5 py-4 hover:border-[#FF7043]/30 transition-colors cursor-pointer min-w-[220px]">
+                <div className="w-10 h-10 rounded-full bg-[#FF7043]/10 text-[#FF7043] flex items-center justify-center">
+                  {c.icon}
+                </div>
                 <div>
-                  <p className="text-[10px] font-black text-dark uppercase tracking-tight">{c.label}</p>
-                  <p className="text-[9px] font-bold text-dark-light mt-0.5">USE {c.code}</p>
+                  <p className="text-xs font-heading font-bold text-gray-900">{c.label}</p>
+                  <p className="text-[10px] font-bold text-gray-400 mt-0.5">USE {c.code}</p>
                 </div>
               </div>
             ))}
@@ -134,96 +134,94 @@ const RestaurantMenu = () => {
         </div>
 
         {/* ── Sticky Menu Controls ── */}
-        <div className="sticky top-[64px] sm:top-[72px] z-30 bg-white/95 backdrop-blur-sm -mx-4 px-4 py-3 border-y border-gray-100 mb-8 flex items-center justify-between gap-4 shadow-sm">
-          {/* Veg Toggle */}
-          <label className="flex items-center gap-2.5 cursor-pointer flex-shrink-0">
-            <span className="text-[10px] font-black text-dark-muted uppercase tracking-widest hidden sm:block">Veg Only</span>
-            <div
-              onClick={() => setIsVegOnly(!isVegOnly)}
-              className={`w-10 h-5 rounded-full relative transition-all cursor-pointer ${isVegOnly ? 'bg-green-500' : 'bg-gray-200'}`}
-            >
-              <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${isVegOnly ? 'left-5' : 'left-0.5'}`} />
-            </div>
-            <span className="text-[10px] font-black text-dark-muted uppercase tracking-widest sm:hidden">Veg</span>
-          </label>
-
-          {/* Search */}
-          <div className="relative group flex-grow max-w-[260px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={15} />
+        <div className="sticky top-[64px] md:top-[160px] z-30 bg-[#FAFAFA]/95 backdrop-blur-xl py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+          
+          <div className="relative group w-full sm:max-w-[300px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" size={18} />
             <input
               type="text"
-              placeholder="Search in menu.."
-              className="w-full bg-gray-50 rounded-xl py-2.5 pl-9 pr-4 text-xs font-bold outline-none border-2 border-transparent focus:border-primary/20 transition-all"
+              placeholder="Search in menu..."
+              className="w-full bg-white shadow-sm rounded-2xl py-3 pl-11 pr-4 text-sm font-medium outline-none border border-transparent focus:border-[#FF7043]/30 transition-all placeholder:text-gray-400 text-gray-900"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
+
+          <label className="flex items-center gap-3 cursor-pointer self-start sm:self-auto bg-white shadow-sm border border-transparent px-4 py-3 rounded-2xl">
+            <span className="text-xs font-bold text-gray-600">Veg Only</span>
+            <div
+              onClick={() => setIsVegOnly(!isVegOnly)}
+              className={`w-11 h-6 rounded-full relative transition-colors duration-300 ${isVegOnly ? 'bg-[#10B981]' : 'bg-gray-200'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300 ${isVegOnly ? 'translate-x-6' : 'translate-x-1'}`} />
+            </div>
+          </label>
         </div>
 
         {/* ── Menu Sections ── */}
-        <div className="space-y-10">
+        <div className="space-y-12 mt-6">
           {menuSections.length === 0 ? (
-            <div className="text-center py-20 text-dark-muted font-bold text-sm">No items found. Try adjusting your search.</div>
+            <div className="text-center py-20 bg-white rounded-[2rem] border border-dashed border-gray-200">
+               <p className="text-gray-500 font-bold text-lg">No items match your search.</p>
+            </div>
           ) : (
             menuSections.map((section) => (
-              <section key={section.title} className="scroll-mt-32">
-                <div className="flex justify-between items-center mb-5 pb-3 border-b-4 border-gray-50">
-                  <h2 className="text-base sm:text-lg font-black text-dark uppercase italic tracking-tighter">
-                    {section.title} <span className="text-dark-light font-semibold text-sm">({section.items.length})</span>
+              <section key={section.title} className="bg-white rounded-[2rem] p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-50">
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                  <h2 className="text-xl font-heading font-bold text-gray-900">
+                    {section.title} <span className="text-gray-400 text-base">({section.items.length})</span>
                   </h2>
-                  <ChevronDown size={18} className="text-dark-muted" />
                 </div>
 
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100/80">
                   {section.items.map(item => {
                     const count = getItemCount(item._id);
                     return (
-                      <div key={item._id} className="py-6 sm:py-8 flex justify-between gap-4 sm:gap-8">
+                      <div key={item._id} className="py-6 flex justify-between gap-6 sm:gap-10 group">
                         {/* Item Info */}
                         <div className="flex-grow min-w-0">
-                          {/* Veg/Non-veg Dot */}
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <div className={`w-4 h-4 border-2 flex items-center justify-center rounded-sm flex-shrink-0 ${item.isVeg ? 'border-green-600' : 'border-red-500'}`}>
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-4 h-4 flex items-center justify-center rounded-[4px] border ${item.isVeg ? 'border-green-600 bg-green-50' : 'border-red-500 bg-red-50'}`}>
                               <div className={`w-2 h-2 rounded-full ${item.isVeg ? 'bg-green-600' : 'bg-red-500'}`} />
                             </div>
                             {item.isBestSeller && (
-                              <span className="text-[10px] font-black text-orange-500 tracking-wider uppercase">⭐ Bestseller</span>
+                              <span className="text-[10px] font-bold text-white bg-[#F59E0B] px-2 py-0.5 rounded-md tracking-wide">BESTSELLER</span>
                             )}
                           </div>
-                          <h3 className="text-sm sm:text-base font-black text-dark tracking-tight mb-1 uppercase italic line-clamp-1">
+                          <h3 className="text-lg font-heading font-bold text-gray-900 leading-tight mb-2 group-hover:text-[#FF7043] transition-colors line-clamp-2">
                             {item.name}
                           </h3>
-                          <p className="text-sm font-black text-dark mb-2">₹{item.price}</p>
-                          <p className="text-[11px] text-dark-light font-semibold leading-relaxed line-clamp-2">
+                          <p className="text-base font-bold text-gray-900 mb-3">₹{item.price}</p>
+                          <p className="text-sm text-gray-500 font-medium leading-relaxed max-w-xl">
                             {item.description}
                           </p>
                         </div>
 
                         {/* Item Image + Add Button */}
-                        <div className="relative flex-shrink-0 w-28 h-28 sm:w-36 sm:h-36">
+                        <div className="relative flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40">
                           <img
                             src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=300'}
-                            className="w-full h-full object-cover rounded-2xl shadow-sm"
+                            className="w-full h-full object-cover rounded-[1.5rem] shadow-sm transform group-hover:scale-[1.02] transition-transform duration-300"
                             alt={item.name}
                             loading="lazy"
                           />
-                          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[90%]">
+                          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[85%]">
                             {count > 0 ? (
-                              <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl py-1.5 px-2 shadow-md text-primary">
-                                <button onClick={() => updateQuantity(item._id, count - 1)} className="p-1 hover:scale-110 active:scale-95 transition-transform">
-                                  <Minus size={14} strokeWidth={3} />
+                              <div className="flex items-center justify-between bg-white border border-[#FF7043] rounded-xl py-2 px-3 shadow-lg shadow-[#FF7043]/10 text-[#FF7043]">
+                                <button onClick={() => updateQuantity(item._id, count - 1)} className="p-1 hover:bg-[#FF7043]/10 rounded-md transition-colors">
+                                  <Minus size={16} strokeWidth={3} />
                                 </button>
-                                <span className="font-black text-sm w-4 text-center">{count}</span>
-                                <button onClick={() => updateQuantity(item._id, count + 1)} className="p-1 hover:scale-110 active:scale-95 transition-transform">
-                                  <Plus size={14} strokeWidth={3} />
+                                <span className="font-bold text-base w-6 text-center">{count}</span>
+                                <button onClick={() => updateQuantity(item._id, count + 1)} className="p-1 hover:bg-[#FF7043]/10 rounded-md transition-colors">
+                                  <Plus size={16} strokeWidth={3} />
                                 </button>
                               </div>
                             ) : (
                               <button
-                                onClick={() => { addToCart(item); toast.success(`${item.name} added!`, { icon: '🍽️' }); }}
-                                className="w-full bg-white border border-gray-200 text-green-600 text-xs font-black py-2 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 uppercase tracking-widest"
+                                onClick={() => { addToCart(item); toast.success(`${item.name} added!`, { icon: '😋' }); }}
+                                className="w-full bg-white text-[#10B981] text-sm font-bold py-2.5 rounded-xl shadow-lg border border-gray-100 hover:bg-[#10B981] hover:text-white hover:border-[#10B981] transition-all active:scale-95"
                               >
-                                ADD
+                                ADD TO CART
                               </button>
                             )}
                           </div>
@@ -246,24 +244,27 @@ const RestaurantMenu = () => {
             animate={{ y: 0 }}
             exit={{ y: 120 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-5 sm:pb-6"
+            className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 lg:pb-8"
           >
             <Link
               to="/cart"
-              className="max-w-[860px] mx-auto flex items-center justify-between bg-green-600 hover:bg-green-700 text-white px-5 py-4 rounded-2xl shadow-2xl shadow-green-600/30 transition-all active:scale-[0.98]"
+              className="max-w-[900px] mx-auto flex items-center justify-between bg-[#10B981] hover:bg-emerald-600 text-white px-6 py-5 rounded-[2rem] shadow-[0_20px_40px_-15px_rgba(16,185,129,0.5)] transition-all active:scale-[0.98]"
             >
-              <div className="flex items-center gap-3">
-                <div className="bg-green-700 rounded-xl p-1.5">
-                  <ShoppingCart size={18} />
+              <div className="flex items-center gap-4">
+                <div className="bg-white/20 rounded-xl p-2.5 backdrop-blur-sm">
+                  <ShoppingCart size={22} className="text-white" />
                 </div>
                 <div>
-                  <p className="text-xs font-black uppercase tracking-widest opacity-80">{cartCount} item{cartCount > 1 ? 's' : ''}</p>
-                  <p className="text-sm font-black uppercase italic tracking-tight leading-none mt-0.5">View Cart</p>
+                  <p className="text-sm font-bold opacity-90">{cartCount} Item{cartCount > 1 ? 's' : ''}</p>
+                  <p className="text-xs font-medium opacity-80 mt-0.5">Extra charges may apply</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-black italic">₹{cartTotal}</span>
-                <ChevronRight size={20} strokeWidth={3} />
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-heading font-bold">₹{cartTotal}</span>
+                <div className="bg-white text-[#10B981] font-bold text-xs px-4 py-2 rounded-full flex items-center gap-1 group">
+                   View Cart
+                   <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
             </Link>
           </motion.div>
