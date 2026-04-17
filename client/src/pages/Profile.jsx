@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { User, Mail, Phone, MapPin, Shield, Camera, Save, Loader2, ArrowLeft, Plus, Trash2, Home, Briefcase, Map } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { User, Mail, Phone, Shield, Save, Loader2, ArrowLeft, Plus, Trash2, Home, Briefcase, Map, MapPin } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const Profile = () => {
@@ -58,9 +58,9 @@ const Profile = () => {
 
   const getAddressIcon = (type) => {
     switch (type) {
-      case 'Home': return <Home size={20} className="text-white" />;
-      case 'Work': return <Briefcase size={20} className="text-white" />;
-      default: return <Map size={20} className="text-white" />;
+      case 'Home': return <Home size={20} />;
+      case 'Work': return <Briefcase size={20} />;
+      default: return <MapPin size={20} />;
     }
   };
 
@@ -86,183 +86,192 @@ const Profile = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="page-container" style={{ paddingTop: '5rem', paddingBottom: '5rem' }}>
+    <div className="bg-[#FAFAFA] min-h-screen py-10 sm:py-16">
+      <div className="max-w-[850px] mx-auto px-6">
          <motion.div 
-           initial={{ opacity: 0, y: 30 }}
+           initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
-           style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}
+           className="flex flex-col gap-10"
          >
-            {/* Header Section */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2.5rem' }} className="md-flex-row">
-               <div style={{ position: 'relative' }} className="group">
-                  <div className="profile-avatar-container">
+            {/* ── Header Section ── */}
+            <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-8">
+               <div className="relative group shrink-0">
+                  <div className="w-32 h-32 rounded-[2rem] overflow-hidden shadow-lg border-4 border-white">
                     <img 
-                      src={`https://ui-avatars.com/api/?name=${user?.name}&background=e03546&color=fff&size=256&bold=true`} 
+                      src={`https://ui-avatars.com/api/?name=${user?.name}&background=FF7043&color=fff&size=256&bold=true`} 
                       alt={user?.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                </div>
 
-               <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '1rem' }} className="md-text-left">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center' }} className="md-justify-start">
-                     <span style={{ px: '1rem', py: '0.375rem', backgroundColor: '#f1f5f9', color: '#64748b', borderRadius: '9999px', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Verified Account</span>
+               <div className="text-center sm:text-left flex flex-col gap-4 w-full">
+                  <div className="flex items-center gap-3 justify-center sm:justify-start flex-wrap">
+                     <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-[10px] font-bold uppercase tracking-widest">Verified Account</span>
                      {user?.role === 'restaurant_owner' && (
-                        <span style={{ px: '1rem', py: '0.375rem', backgroundColor: '#fef2f2', color: '#ef4444', borderRadius: '9999px', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Restaurateur</span>
+                        <span className="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg text-[10px] font-bold uppercase tracking-widest">Restaurant Partner</span>
                      )}
                   </div>
-                  <h1 className="results-title" style={{ fontSize: '48px', textTransform: 'capitalize' }}>{user?.name}</h1>
-                  <p style={{ color: '#94a3b8', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }} className="md-justify-start">
-                     <Mail size={16} /> {user?.email}
-                  </p>
+                  <div>
+                    <h1 className="text-3xl sm:text-4xl font-heading font-black text-gray-900 tracking-tight capitalize mb-2">{user?.name}</h1>
+                    <p className="text-gray-500 font-bold flex items-center gap-2 justify-center sm:justify-start">
+                       <Mail size={16} className="text-gray-400" /> {user?.email}
+                    </p>
+                  </div>
                </div>
             </div>
 
-            {/* Profile Form */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
-               <div className="profile-form-grid" style={{ gridTemplateColumns: '1fr' }}>
-                  
-                  {/* Basic Info */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                     <h3 style={{ fontSize: '14px', fontWeight: '900', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.3em', paddingBottom: '1rem', borderBottom: '1px solid #f1f5f9' }}>Contact Details</h3>
-                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '2rem' }} className="md-grid-cols-2">
-                        <div className="input-group">
-                           <label className="input-label">Full Name</label>
-                           <div className="input-icon-wrapper">
-                              <User size={20} />
-                              <input type="text" name="name" value={formData.name} onChange={handleChange} className="input-field-premium input-field-with-icon" placeholder="John Doe" required />
-                           </div>
+            {/* ── Profile Form ── */}
+            <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+               
+               {/* Contact Details */}
+               <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 space-y-6">
+                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest pb-4 border-b border-gray-100">Contact Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-700 ml-1">Full Name</label>
+                        <div className="relative group">
+                           <User size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
+                           <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="John Doe" required />
                         </div>
-                        <div className="input-group">
-                           <label className="input-label">Phone Number</label>
-                           <div className="input-icon-wrapper">
-                              <Phone size={20} />
-                              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="input-field-premium input-field-with-icon" placeholder="+91 98765 43210" />
-                           </div>
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-700 ml-1">Phone Number</label>
+                        <div className="relative group">
+                           <Phone size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
+                           <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="+91 98765 43210" />
                         </div>
                      </div>
                   </div>
+               </div>
 
-                  {/* Multiple Address Management */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginTop: '1rem' }}>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
-                        <h3 style={{ fontSize: '14px', fontWeight: '900', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.3em' }}>Saved Addresses</h3>
-                        {!showAddAddress && (
-                           <button type="button" onClick={() => setShowAddAddress(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '12px', fontWeight: '900', color: '#e03546', cursor: 'pointer', background: 'none', border: 'none', textTransform: 'uppercase' }}>
-                              <Plus size={16} /> Add New
-                           </button>
-                        )}
-                     </div>
+               {/* Address Management */}
+               <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 space-y-8">
+                  <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Saved Addresses</h3>
+                     {!showAddAddress && (
+                        <button type="button" onClick={() => setShowAddAddress(true)} className="flex items-center gap-2 text-xs font-bold text-[#FF7043] bg-[#FF7043]/10 hover:bg-[#FF7043]/20 px-4 py-2 rounded-xl transition-colors uppercase tracking-widest">
+                           <Plus size={16} /> Add New
+                        </button>
+                     )}
+                  </div>
 
-                     {showAddAddress && (
-                        <div style={{ backgroundColor: '#f8fafc', padding: '2rem', borderRadius: '1.5rem', border: '1px dashed #cbd5e1', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                           <h4 style={{ fontSize: '14px', fontWeight: '900', color: '#334155' }}>Add New Address</h4>
-                           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }} className="md-grid-cols-2">
-                              <div>
-                                 <label className="input-label">Address Type</label>
-                                 <select name="type" value={newAddress.type} onChange={handleAddressChange} className="input-field-premium">
-                                    <option value="Home">Home</option>
-                                    <option value="Work">Work</option>
-                                    <option value="Other">Other</option>
-                                 </select>
+                  <AnimatePresence>
+                    {showAddAddress && (
+                       <motion.div 
+                         initial={{ height: 0, opacity: 0 }}
+                         animate={{ height: 'auto', opacity: 1 }}
+                         exit={{ height: 0, opacity: 0 }}
+                         className="overflow-hidden"
+                       >
+                         <div className="bg-gray-50 p-6 sm:p-8 rounded-[1.5rem] border border-gray-200 space-y-6 mb-8">
+                            <h4 className="text-sm font-bold text-gray-900">Add New Address</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               <div className="space-y-2">
+                                  <label className="text-xs font-bold text-gray-700 ml-1">Address Type</label>
+                                  <select name="type" value={newAddress.type} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm">
+                                     <option value="Home">Home</option>
+                                     <option value="Work">Work</option>
+                                     <option value="Other">Other</option>
+                                  </select>
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-xs font-bold text-gray-700 ml-1">Phone (Optional)</label>
+                                  <input type="text" name="phone" value={newAddress.phone} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="Receiver's Phone" />
+                               </div>
+                               <div className="md:col-span-2 space-y-2">
+                                  <label className="text-xs font-bold text-gray-700 ml-1">Street Address</label>
+                                  <textarea name="street" value={newAddress.street} onChange={handleAddressChange} rows="2" className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm resize-none" placeholder="Door number, street name, landmarks..."></textarea>
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-xs font-bold text-gray-700 ml-1">City</label>
+                                  <input type="text" name="city" value={newAddress.city} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="City" />
+                               </div>
+                               <div className="space-y-2">
+                                  <label className="text-xs font-bold text-gray-700 ml-1">Postal Code</label>
+                                  <input type="text" name="postalCode" value={newAddress.postalCode} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="ZIP/Postal Code" />
+                               </div>
+                               <div className="md:col-span-2 flex items-center gap-3 pt-2">
+                                  <input type="checkbox" id="isDefault" name="isDefault" checked={newAddress.isDefault} onChange={handleAddressChange} className="w-5 h-5 rounded accent-[#FF7043]" />
+                                  <label htmlFor="isDefault" className="text-sm font-bold text-gray-600 cursor-pointer">Make this my default address</label>
+                               </div>
+                            </div>
+                            <div className="flex gap-4 justify-end mt-4 pt-4 border-t border-gray-200/60">
+                               <button type="button" onClick={() => setShowAddAddress(false)} className="px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold text-sm rounded-xl hover:bg-gray-50 transition-colors">CANCEL</button>
+                               <button type="button" onClick={addAddress} className="px-6 py-3 bg-[#FF7043] text-white font-bold text-sm rounded-xl hover:bg-[#F4511E] transition-colors shadow-md shadow-[#FF7043]/20">SAVE ADDRESS</button>
+                            </div>
+                         </div>
+                       </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                     {addresses.length > 0 ? addresses.map((addr, idx) => (
+                        <div key={idx} className={`p-6 rounded-[1.5rem] border-2 relative bg-white transition-all ${addr.isDefault ? 'border-[#FF7043] shadow-md shadow-[#FF7043]/10' : 'border-gray-100'}`}>
+                           {addr.isDefault && (
+                              <span className="absolute -top-3 right-6 bg-[#FF7043] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">Default</span>
+                           )}
+                           <div className="flex items-center gap-4 mb-4">
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${addr.isDefault ? 'bg-[#FF7043]' : 'bg-gray-900'}`}>
+                                 {getAddressIcon(addr.type)}
                               </div>
-                              <div>
-                                 <label className="input-label">Phone (Optional)</label>
-                                 <input type="text" name="phone" value={newAddress.phone} onChange={handleAddressChange} className="input-field-premium" placeholder="Receiver's Phone" />
-                              </div>
-                              <div style={{ gridColumn: '1 / -1' }}>
-                                 <label className="input-label">Street Address</label>
-                                 <textarea name="street" value={newAddress.street} onChange={handleAddressChange} rows="2" className="input-field-premium" style={{ resize: 'none' }} placeholder="Door number, street name, landmarks..."></textarea>
-                              </div>
-                              <div>
-                                 <label className="input-label">City</label>
-                                 <input type="text" name="city" value={newAddress.city} onChange={handleAddressChange} className="input-field-premium" placeholder="City" />
-                              </div>
-                              <div>
-                                 <label className="input-label">Postal Code</label>
-                                 <input type="text" name="postalCode" value={newAddress.postalCode} onChange={handleAddressChange} className="input-field-premium" placeholder="ZIP/Postal Code" />
-                              </div>
-                              <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                 <input type="checkbox" id="isDefault" name="isDefault" checked={newAddress.isDefault} onChange={handleAddressChange} style={{ width: '1rem', height: '1rem', accentColor: '#e03546' }} />
-                                 <label htmlFor="isDefault" style={{ fontSize: '14px', fontWeight: '500', color: '#475569', cursor: 'pointer' }}>Make this my default address</label>
-                              </div>
+                              <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">{addr.type}</h4>
                            </div>
-                           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
-                              <button type="button" onClick={() => setShowAddAddress(false)} className="btn" style={{ backgroundColor: '#e2e8f0', color: '#475569', borderRadius: '1rem', padding: '0.75rem 1.5rem', fontWeight: '900' }}>CANCEL</button>
-                              <button type="button" onClick={addAddress} className="btn btn-primary" style={{ borderRadius: '1rem', padding: '0.75rem 1.5rem', border: 'none' }}>SAVE ADDRESS</button>
+                           <p className="text-gray-900 font-bold text-base leading-tight mb-2 pr-4">{addr.street}</p>
+                           <p className="text-gray-500 text-sm font-medium">{addr.city}, {addr.postalCode}</p>
+                           {addr.phone && <p className="text-gray-500 text-sm font-medium mt-1 flex items-center gap-1.5"><Phone size={14}/>{addr.phone}</p>}
+                           
+                           <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                              {!addr.isDefault ? (
+                                 <button type="button" onClick={() => setAsDefault(idx)} className="text-xs font-bold text-blue-500 hover:text-blue-600 uppercase tracking-widest">Set Default</button>
+                              ) : <div></div>}
+                              <button type="button" onClick={() => removeAddress(idx)} className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg"><Trash2 size={16} /> Remove</button>
                            </div>
+                        </div>
+                     )) : (
+                        <div className="sm:col-span-2 text-center p-12 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
+                           <MapPin size={40} className="mx-auto text-gray-300 mb-4" />
+                           <p className="text-gray-500 font-bold text-sm">No addresses saved yet. Add one to checkout faster!</p>
                         </div>
                      )}
-
-                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-                        {addresses.length > 0 ? addresses.map((addr, idx) => (
-                           <div key={idx} style={{ border: addr.isDefault ? '2px solid #e03546' : '1px solid #e2e8f0', borderRadius: '1.5rem', padding: '1.5rem', position: 'relative', backgroundColor: '#fff', boxShadow: addr.isDefault ? '0 10px 15px -3px rgba(224, 53, 70, 0.1)' : 'none' }}>
-                              {addr.isDefault && (
-                                 <span style={{ position: 'absolute', top: '-10px', right: '1.5rem', backgroundColor: '#e03546', color: '#fff', fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', padding: '0.25rem 0.75rem', borderRadius: '9999px', letterSpacing: '0.1em' }}>Default</span>
-                              )}
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                                 <div style={{ backgroundColor: '#0f172a', width: '2.5rem', height: '2.5rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    {getAddressIcon(addr.type)}
-                                 </div>
-                                 <h4 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{addr.type}</h4>
-                              </div>
-                              <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6', marginBottom: '0.5rem' }}>{addr.street}</p>
-                              <p style={{ color: '#64748b', fontSize: '12px', fontWeight: '700' }}>{addr.city}, {addr.postalCode}</p>
-                              {addr.phone && <p style={{ color: '#64748b', fontSize: '12px', fontWeight: '700', marginTop: '0.25rem' }}><Phone size={12} style={{ display: 'inline', marginRight: '4px' }}/>{addr.phone}</p>}
-                              
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
-                                 {!addr.isDefault ? (
-                                    <button type="button" onClick={() => setAsDefault(idx)} style={{ fontSize: '12px', fontWeight: '900', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', textTransform: 'uppercase' }}>Set Default</button>
-                                 ) : <span style={{ width: '10px' }}></span>}
-                                 <button type="button" onClick={() => removeAddress(idx)} style={{ fontSize: '12px', fontWeight: '900', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Trash2 size={14} /> Remove</button>
-                              </div>
-                           </div>
-                        )) : (
-                           <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', backgroundColor: '#f8fafc', borderRadius: '1.5rem', border: '2px dashed #cbd5e1' }}>
-                              <p style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>No addresses saved yet. Add one to checkout faster!</p>
-                           </div>
-                        )}
-                     </div>
                   </div>
+               </div>
 
-                  {/* Security */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginTop: '1rem' }}>
-                     <h3 style={{ fontSize: '14px', fontWeight: '900', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.3em', paddingBottom: '1rem', borderBottom: '1px solid #f1f5f9' }}>Security</h3>
-                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '2rem' }} className="md-grid-cols-2">
-                        <div className="input-group">
-                           <label className="input-label">New Password</label>
-                           <div className="input-icon-wrapper">
-                              <Shield size={20} />
-                              <input type="password" name="password" value={formData.password} onChange={handleChange} className="input-field-premium input-field-with-icon" placeholder="Leave blank to keep current" />
-                           </div>
+               {/* Security */}
+               <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 space-y-6">
+                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest pb-4 border-b border-gray-100">Security</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-700 ml-1">New Password</label>
+                        <div className="relative group">
+                           <Shield size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
+                           <input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="Leave blank to keep current" />
                         </div>
-                        <div className="input-group">
-                           <label className="input-label">Confirm New Password</label>
-                           <div className="input-icon-wrapper">
-                              <Shield size={20} />
-                              <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="input-field-premium input-field-with-icon" placeholder="••••••••" />
-                           </div>
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-xs font-bold text-gray-700 ml-1">Confirm New Password</label>
+                        <div className="relative group">
+                           <Shield size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
+                           <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="••••••••" />
                         </div>
                      </div>
                   </div>
+               </div>
 
-                  <div style={{ paddingTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-                     <button
-                        type="submit"
-                        disabled={loading}
-                        className="btn btn-primary"
-                        style={{ padding: '1.25rem 3rem', borderRadius: '9999px', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', border: 'none' }}
-                     >
-                        {loading ? <Loader2 className="animate-spin" /> : <Save size={20} style={{ strokeWidth: 2.5 }} />}
-                        SAVE ALL CHANGES
-                     </button>
-                  </div>
+               <div className="flex justify-end pt-4">
+                  <button
+                     type="submit"
+                     disabled={loading}
+                     className="bg-[#10B981] hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0"
+                  >
+                     {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                     SAVE ALL CHANGES
+                  </button>
                </div>
             </form>
 
-            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '2rem' }}>
-               <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontWeight: '900', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.3em', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.color = '#0f172a'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>
+            <div className="flex justify-center -mt-2 pb-6">
+               <Link to="/" className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors text-xs font-bold uppercase tracking-widest">
                   <ArrowLeft size={16} /> Back to Homepage
                </Link>
             </div>
@@ -273,4 +282,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
