@@ -1,44 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
-
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF7043; /* Coral Orange */
-  --color-primary-dark: #F4511E;
-  --color-primary-light: #FFCCBC;
-  
-  --color-dark: #1F2937; /* Dark Gray */
-  --color-dark-muted: #6B7280; /* Muted Gray */
-  --color-dark-light: #9CA3AF;
-  
-  --color-success: #10B981; 
-  --color-ice: #F9FAFB;
-  
-  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
-  --shadow-elevated: 0 20px 40px -15px rgba(0, 0, 0, 0.12);
-  --shadow-floating: 0 10px 25px -5px rgba(255, 112, 67, 0.3);
-  
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
-  
-  --font-sans: 'Inter', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
-}
+  --color-primary: #FC8019;
+  --color-primaryDark: #E46F12;
+  --color-secondary: #282C3F;
+  --color-accent: #60B246;
+  --color-background: #F8F8F8;
+  --color-card: #FFFFFF;
+  --color-border: #E9E9EB;
+  --color-muted: #686B78;
+  --color-rating: #48C479;
+  --color-danger: #E23744;
 
-:root {
-  --bg-soft: #FAFAFA;
-}
+  --font-sans: 'Poppins', system-ui, sans-serif;
 
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-lg: 18px;
+  --text-lg--line-height: 26px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+}
 body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-soft);
-  color: var(--color-dark);
+  font-family: "Poppins", system-ui, sans-serif;
+  background-color: var(--color-background);
+  color: #282C3F;
   -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -51,13 +55,13 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Auth Pages Background */
 .auth-page {
-  background: var(--bg-soft);
+  background: var(--color-background);
   background-image: radial-gradient(rgba(0,0,0,0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 .map-view-container {
-  background: linear-gradient(135deg, #FFCCBC, #FFAB91, #FFCCBC);
+  background: linear-gradient(135deg, #FFCCBC, #FC8019, #FFCCBC);
 }
 
 /* Skeletons */
