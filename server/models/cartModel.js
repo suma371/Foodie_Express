@@ -32,6 +32,9 @@ const cartSchema = mongoose.Schema({
   timestamps: true,
 });
 
+// Optimization Indexes
+cartSchema.index({ userId: 1 });
+
 const Cart = mongoose.model('Cart', cartSchema);
 
 module.exports = Cart;

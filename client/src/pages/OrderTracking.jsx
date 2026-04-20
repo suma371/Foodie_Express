@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Star, Phone, MessageSquare, ChevronLeft, ArrowRight, MapPin, ChefHat, Bike, Home, Clock, X } from 'lucide-react';
+import PageWrapper from '../components/layout/PageWrapper';
 
 const OrderTracking = () => {
   const { id } = useParams();

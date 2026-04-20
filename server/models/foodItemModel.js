@@ -36,6 +36,11 @@ const foodItemSchema = mongoose.Schema({
   timestamps: true,
 });
 
+// Optimization Indexes
+foodItemSchema.index({ restaurantId: 1 });
+foodItemSchema.index({ category: 1 });
+foodItemSchema.index({ name: 'text' });
+
 const FoodItem = mongoose.model('FoodItem', foodItemSchema);
 
 module.exports = FoodItem;

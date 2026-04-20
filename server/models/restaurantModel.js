@@ -36,9 +36,18 @@ const restaurantSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
+  deliveryTime: {
+    type: String,
+    default: '30-40 mins',
+  },
 }, {
   timestamps: true,
 });
+
+// Optimization Indexes
+restaurantSchema.index({ "location.city": 1 });
+restaurantSchema.index({ name: 1 });
+restaurantSchema.index({ ownerId: 1 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 

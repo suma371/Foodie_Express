@@ -10,8 +10,20 @@ const {
 } = require('../controllers/orderController');
 const { protect, admin, restaurantOwner } = require('../middleware/authMiddleware');
 
+const { check } = require('express-validator');
+const { validate } = require('../middleware/validatorMiddleware');
+
 router.route('/')
-  .post(protect, addOrderItems)
+  .post(
+    protect,
+    [
+      check('items', 'Order items are required').isArray({ min: 1 }),
+      check('totalAmount', 'Total amount is required').isNumeric(),
+      check('address', 'Delivery address is required').not().isEmpty(),
+    ],
+    validate,
+    addOrderItems
+  )
   .get(protect, admin, getOrders);
 
 router.route('/myorders')
@@ -21,7 +33,15 @@ router.route('/:id')
   .get(protect, getOrderById);
 
 router.route('/:id/status')
-  .put(protect, restaurantOwner, updateOrderStatus);
+  .put(
+    protect, 
+    restaurantOwner, 
+    [
+      check('status', 'Status is required').not().isEmpty(),
+    ],
+    validate,
+    updateOrderStatus
+  );
 
 router.route('/:id/pay')
   .put(protect, admin, updateOrderPaymentStatus);

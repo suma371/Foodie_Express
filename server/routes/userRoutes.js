@@ -37,6 +37,14 @@ router.post('/logout', logoutUser);
 router
   .route('/profile')
   .get(protect, getUserProfile)
-  .put(protect, updateUserProfile);
+  .put(
+    protect,
+    [
+      check('name', 'Name is required').optional().not().isEmpty(),
+      check('email', 'Please include a valid email').optional().isEmail(),
+    ],
+    validate,
+    updateUserProfile
+  );
 
 module.exports = router;

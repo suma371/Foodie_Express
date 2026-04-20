@@ -17,90 +17,28 @@ const generateMockId = () => {
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Handle Offline/Mock Mode Fallback
-  if (global.isOfflineMode) {
-    console.log('🔄 DB connection offline, checking mock user store...');
-    const user = mockUsers.find(u => u.email === email);
-    
-    // For demo purposes, we accept any password if user exists in mock
-    if (user && (password === 'password123' || user.password === password)) {
-      generateToken(res, user._id);
-      return res.json(user);
-    }
-    
-    // Default Admin always works in Mock Mode
-    if (email === 'admin@foodie.com' && password === 'admin123') {
-      const admin = {
-        _id: 'mock-admin-id',
-        name: 'Demo Admin',
-        email: 'admin@foodie.com',
-        role: 'admin',
-        phone: '9876543210',
-        address: 'Foodie Headquarters, Mumbai',
-        addresses: [],
-      };
-      generateToken(res, admin._id);
-      return res.json(admin);
-    }
+  const user = await User.findOne({ email }).maxTimeMS(2000);
 
+  if (user && (await user.matchPassword(password))) {
+    generateToken(res, user._id);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+      address: user.address,
+      addresses: user.addresses,
+    });
+  } else {
     res.status(401);
-    throw new Error('Invalid email or password (Mock Mode)');
-  }
-
-  try {
-    const user = await User.findOne({ email }).maxTimeMS(2000);
-
-    if (user && (await user.matchPassword(password))) {
-      generateToken(res, user._id);
-
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        address: user.address,
-        addresses: user.addresses,
-      });
-    } else {
-      res.status(401);
-      throw new Error('Invalid email or password');
-    }
-  } catch (err) {
-    res.status(500);
-    throw new Error('Database connection failed. Please check your DB configuration.');
+    throw new Error('Invalid email or password');
   }
 });
 
-// @desc    Register a new user
-// @route   POST /api/users
-// @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
-
-  // Handle Offline/Mock Mode Fallback
-  if (global.isOfflineMode) {
-    console.log('🔄 DB connection offline, saving to mock user store...');
-    
-    if (mockUsers.find(u => u.email === email)) {
-      res.status(400);
-      throw new Error('User already exists in mock store');
-    }
-
-    const newUser = {
-      _id: generateMockId(),
-      name,
-      email,
-      password, // In mock, we don't hash for simplicity
-      role: role || 'user',
-      addresses: []
-    };
-
-    mockUsers.push(newUser);
-    generateToken(res, newUser._id);
-
-    return res.status(201).json(newUser);
-  }
+  const { name, email, password, role, address } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -113,7 +51,8 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
-    role: role || 'user'
+    role: role || 'user',
+    address
   });
 
   if (user) {
@@ -124,9 +63,7 @@ const registerUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      phone: user.phone,
       address: user.address,
-      addresses: user.addresses,
     });
   } else {
     res.status(400);

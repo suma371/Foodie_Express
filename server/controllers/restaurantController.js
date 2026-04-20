@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Restaurant = require('../models/restaurantModel');
+const FoodItem = require('../models/foodItemModel');
 const Review = require('../models/reviewModel');
 const { mockRestaurants } = require('../data/mockRestaurants');
 
@@ -7,52 +8,51 @@ const { mockRestaurants } = require('../data/mockRestaurants');
 // @route   GET /api/restaurants
 // @access  Public
 const getRestaurants = asyncHandler(async (req, res) => {
-  const pageSize = Number(req.query.pageSize) || 8;
+  const pageSize = Number(req.query.pageSize) || 12;
   const page = Number(req.query.pageNumber) || 1;
 
-  // Search keyword (fuzzy search on name)
+  // Search Logic
   const keyword = req.query.keyword
-    ? {
-        name: {
-          $regex: req.query.keyword,
-          $options: 'i',
-        },
-      }
+    ? { name: { $regex: req.query.keyword, $options: 'i' } }
     : {};
 
-  // Cuisine filter
+  // Location/City Filter (Optimized with Index)
+  const city = req.query.city
+    ? { "location.city": { $regex: req.query.city, $options: 'i' } }
+    : {};
+
+  // Cuisine Filter
   const cuisine = req.query.cuisine
-    ? {
-        cuisine: { $in: [req.query.cuisine] }
-      }
+    ? { cuisine: { $in: [req.query.cuisine] } }
     : {};
 
-  // Rating filter (minimum rating)
+  // Rating Filter
   const minRating = req.query.minRating
-    ? {
-        rating: { $gte: Number(req.query.minRating) }
-      }
+    ? { rating: { $gte: Number(req.query.minRating) } }
     : {};
 
-  const query = { ...keyword, ...cuisine, ...minRating };
+  // Combine Queries
+  const query = { ...keyword, ...city, ...cuisine, ...minRating };
+  
+  if (req.query.ownerId) query.ownerId = req.query.ownerId;
 
   try {
     const count = await Restaurant.countDocuments(query).maxTimeMS(2000);
     const restaurants = await Restaurant.find(query)
+      .sort({ rating: -1, createdAt: -1 }) // Sort by rating for premium feel
       .limit(pageSize)
       .skip(pageSize * (page - 1))
       .maxTimeMS(2000);
 
-    // If DB is offline, we return mock results but apply search logic to them
+    // Fallback to Mock Data if no results found or forced offline
     if (global.isOfflineMode || restaurants.length === 0) {
       let filteredMocks = [...mockRestaurants];
-      
       if (req.query.keyword) {
-        filteredMocks = filteredMocks.filter(r => 
-          r.name.toLowerCase().includes(req.query.keyword.toLowerCase())
-        );
+        filteredMocks = filteredMocks.filter(r => r.name.toLowerCase().includes(req.query.keyword.toLowerCase()));
       }
-      
+      if (req.query.city) {
+        filteredMocks = filteredMocks.filter(r => r.location?.city?.toLowerCase().includes(req.query.city.toLowerCase()));
+      }
       return res.json({ 
         restaurants: filteredMocks, 
         page, 
@@ -63,7 +63,6 @@ const getRestaurants = asyncHandler(async (req, res) => {
 
     res.json({ restaurants, page, pages: Math.ceil(count / pageSize), count });
   } catch (err) {
-    console.warn('Advanced query failed, returning mock fallback');
     res.json({ 
       restaurants: mockRestaurants, 
       page: 1, 
@@ -85,7 +84,6 @@ const getRestaurantById = asyncHandler(async (req, res) => {
     }
     res.json(restaurant);
   } catch (err) {
-    console.warn('DB error, returning 404 for frontend fallback');
     const mock = mockRestaurants.find(r => r._id === req.params.id) || mockRestaurants[0];
     res.json(mock);
   }
@@ -95,7 +93,7 @@ const getRestaurantById = asyncHandler(async (req, res) => {
 // @route   POST /api/restaurants
 // @access  Private/Admin or RestaurantOwner
 const createRestaurant = asyncHandler(async (req, res) => {
-  const { name, description, address, image, ownerId } = req.body;
+  const { name, description, address, image, ownerId, location, cuisine, deliveryTime } = req.body;
 
   const restaurant = new Restaurant({
     ownerId: (req.user.role === 'admin' && ownerId) ? ownerId : req.user._id,
@@ -103,6 +101,9 @@ const createRestaurant = asyncHandler(async (req, res) => {
     description,
     address,
     image,
+    location,
+    cuisine,
+    deliveryTime: deliveryTime || '30-40 mins'
   });
 
   const createdRestaurant = await restaurant.save();
@@ -113,7 +114,7 @@ const createRestaurant = asyncHandler(async (req, res) => {
 // @route   PUT /api/restaurants/:id
 // @access  Private/Owner
 const updateRestaurant = asyncHandler(async (req, res) => {
-  const { name, description, address, image } = req.body;
+  const { name, description, address, image, location, cuisine, deliveryTime } = req.body;
   const restaurant = await Restaurant.findById(req.params.id);
 
   if (restaurant) {
@@ -126,6 +127,9 @@ const updateRestaurant = asyncHandler(async (req, res) => {
     restaurant.description = description || restaurant.description;
     restaurant.address = address || restaurant.address;
     restaurant.image = image || restaurant.image;
+    restaurant.location = location || restaurant.location;
+    restaurant.cuisine = cuisine || restaurant.cuisine;
+    restaurant.deliveryTime = deliveryTime || restaurant.deliveryTime;
 
     const updatedRestaurant = await restaurant.save();
     res.json(updatedRestaurant);
@@ -193,11 +197,9 @@ const createRestaurantReview = asyncHandler(async (req, res) => {
 
   await review.save();
 
-  // Recalculate average rating and review count
   const allReviews = await Review.find({ restaurant: req.params.id });
   restaurant.numReviews = allReviews.length;
-  restaurant.rating =
-    allReviews.reduce((acc, item) => item.rating + acc, 0) / allReviews.length;
+  restaurant.rating = allReviews.reduce((acc, item) => item.rating + acc, 0) / allReviews.length;
 
   await restaurant.save();
   res.status(201).json({ message: 'Review added successfully', review });
@@ -211,6 +213,50 @@ const getRestaurantReviews = asyncHandler(async (req, res) => {
   res.json(reviews);
 });
 
+// @desc    Global Search (Unified Restaurants and Dishes)
+// @route   GET /api/restaurants/search
+// @access  Public
+const globalSearch = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+
+  if (!query || query.length < 2) {
+    return res.json({ restaurants: [], dishes: [] });
+  }
+
+  // Define regex for fuzzy matching
+  const regex = { $regex: query, $options: 'i' };
+
+  // Parallel searching for better performance
+  const [restaurants, dishes] = await Promise.all([
+    Restaurant.find({
+      $or: [
+        { name: regex },
+        { cuisine: { $in: [new RegExp(query, 'i')] } },
+        { "location.area": regex },
+      ]
+    }).limit(10).maxTimeMS(1000),
+
+    FoodItem.find({
+      $or: [
+        { name: regex },
+        { category: regex },
+      ]
+    })
+    .populate('restaurantId', 'name image rating deliveryTime')
+    .limit(20)
+    .maxTimeMS(1000)
+  ]);
+
+  // If DB results are thin, we can inject logic here or return mocks for development
+  res.json({
+    restaurants,
+    dishes: dishes.map(d => ({
+      ...d._doc,
+      restaurant: d.restaurantId // Map for frontend convenience
+    }))
+  });
+});
+
 module.exports = {
   getRestaurants,
   getRestaurantById,
@@ -219,4 +265,5 @@ module.exports = {
   deleteRestaurant,
   createRestaurantReview,
   getRestaurantReviews,
+  globalSearch,
 };

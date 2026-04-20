@@ -1,99 +1,77 @@
-# FoodieExpress 🍔
+# FoodieExpress 🍕
 
-FoodieExpress is a premium, production-ready food delivery application built with a modern tech stack. Inspired by industry leaders like Swiggy and Zomato, it features a high-fidelity "2026 Aesthetic" UI, real-time order tracking, and a comprehensive administrative suite.
+A production-grade, high-performance food delivery platform inspired by Swiggy, built with the MERN stack.
 
-## ✨ Features
+## 🚀 Key Features
 
-### 🛒 For Customers
-- **High-Fidelity UI**: Premium, responsive interface with smooth Framer Motion animations.
-- **Advanced Search & Discovery**: Filter by cuisine, rating, category, and more.
-- **Express Checkout**: Streamlined checkout flow with Razorpay integration.
-- **Real-Time Tracking**: SVG-animated order progression tracking.
-- **Persistent Cart**: Localized cart management with real-time bill calculations.
-
-### 🔐 Security & Core
-- **JWT Authentication**: Secure, cookie-based authentication using `httpOnly` flags.
-- **Production Validation**: Robust input sanitization and validation using `express-validator`.
-- **Fault Tolerance**: Seamless fallback to high-quality mock data if the database is unreachable.
-
-### 🏢 For Administrators / Owners
-- **Business Dashboard**: Monitor revenue, orders, and active menu items.
-- **Store Management**: Create, update, and manage restaurant profiles.
-- **Digital Menu**: Full CRUD operations for food items with category management.
-- **Order Control**: Real-time status updates (Preparing, Out for Delivery, Delivered).
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- MongoDB (Local or Atlas)
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/FoodieExpress.git
-   cd FoodieExpress
-   ```
-
-2. **Configure Environment Variables**
-   Create a `.env` file in the `server` directory (refer to `.env.example`):
-   ```bash
-   # d:/Projects/Foodie_Express/server/.env
-   MONGO_URI=your_mongodb_uri
-   JWT_SECRET=your_jwt_secret
-   PORT=5000
-   ```
-
-3. **Install Dependencies**
-   ```bash
-   # From the root directory
-   npm install
-   npm run install-all
-   ```
-
-4. **Seed Database (Optional)**
-   ```bash
-   cd server
-   npm run data:import
-   ```
-
-5. **Run the Application**
-   ```bash
-   # From root
-   npm run dev
-   ```
-   - Frontend: `http://localhost:5173`
-   - Backend: `http://localhost:5000`
-
----
+- **Infinite Discovery**: Smooth, high-performance infinite scroll for restaurant discovery using `Intersection Observer`.
+- **Premium UX**: Beautiful skeleton loading states (shimmer effect) and Framer Motion animations for that industry-standard feel.
+- **Categorized Menu**: Intuitively grouped food items with sticky category navigation and smooth-scroll jumping.
+- **Lazy Loading**: Entire app is optimized with route-based code splitting and a premium suspense fallback.
+- **Secure Payments**: Integrated Razorpay (Test Mode) with signature verification and robust error handling.
+- **Role-Based Access**: Specialized dashboards for `Admin` and `Restaurant Owners` with strict data isolation.
+- **Optimized Performance**: Mongoose indexes on core fields (`email`, `city`, `restaurantId`, `userId`) for production-grade scalability.
+- **Standardized REST API**: Strictly follows RESTful patterns with comprehensive data validation using `express-validator`.
+- **Data Migration Ready**: Included a migration script to seamlessly transition existing database schemas to the new Swiggy-standard field names.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React, Vite, Tailwind CSS v4, Lucide React, Framer Motion.
-- **Backend**: Node.js, Express, MongoDB, Mongoose, JWT.
-- **Utilities**: Express-Validator, Morgan, BcryptJS.
+- **Frontend**: React (Vite), Tailwind CSS, Framer Motion, Lucide React.
+- **Backend**: Node.js, Express, MongoDB (Mongoose).
+- **Authentication**: JWT with secure cookie storage.
+- **Tools**: Razorpay SDK, Socket.io, React Hot Toast.
 
-## 📁 Project Structure
+## 📦 Getting Started
 
+### 1. Prerequisites
+- Node.js (v18+)
+- MongoDB (Local or Atlas)
+- Razorpay Test Keys
+
+### 2. Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/foodie-express.git
+
+# Install Backend Dependencies
+cd server
+npm install
+
+# Install Frontend Dependencies
+cd ../client
+npm install
 ```
-Foodie_Express/
-├── client/           # React Frontend (Vite)
-│   ├── src/
-│   │   ├── components/ # Reusable UI atoms and modules
-│   │   ├── context/    # Auth and Cart state
-│   │   ├── pages/      # Route-level views
-│   │   └── services/   # API communication (Axios)
-├── server/           # Node/Express Backend
-│   ├── models/       # Mongoose Schemas
-│   ├── controllers/  # Business Logic
-│   ├── routes/       # API endpoints
-│   └── middleware/   # Auth and Error guards
-└── README.md
+
+### 3. Environment Configuration
+
+Create a `.env` file in the `server` directory:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+NODE_ENV=development
 ```
 
-## 📜 License
-ISC License. Built with ❤️ by Antigravity.
+### 4. Running the App
+
+```bash
+# Start Backend (from server directory)
+npm run dev
+
+# Start Frontend (from client directory)
+npm run dev
+```
+
+## 📐 Architecture
+
+FoodieExpress follows a modular controller-service-route pattern ensuring scalability:
+- `/client/src/pages`: Lazy-loaded high-fidelity views.
+- `/client/src/components`: Reusable premium components (Skeletons, PageWrappers).
+- `/server/controllers`: Secure logic for Orders, Payments, and RBAC.
+
+## 📄 License
+MIT

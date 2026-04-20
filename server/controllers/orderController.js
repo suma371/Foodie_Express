@@ -1,37 +1,38 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
+const Restaurant = require('../models/restaurantModel');
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
-    orderItems,
+    items,
     restaurant,
-    shippingAddress,
+    address,
     paymentMethod,
-    totalPrice,
+    totalAmount,
     paymentStatus,
     paymentDetails,
   } = req.body;
 
-  if (orderItems && orderItems.length === 0) {
+  if (items && items.length === 0) {
     res.status(400);
     throw new Error('No order items');
   } else {
     const order = new Order({
-      user: req.user._id,
+      userId: req.user._id,
       restaurant,
-      orderItems: orderItems.map((x) => ({
+      items: items.map((x) => ({
         ...x,
-        foodItem: x.foodItemId || x._id, // Support different object formats
+        foodItem: x.foodItemId || x.foodItem || x._id,
         _id: undefined,
       })),
-      shippingAddress,
+      address,
       paymentMethod,
       paymentStatus,
       paymentDetails,
-      totalPrice,
+      totalAmount,
     });
 
     const createdOrder = await order.save();
@@ -44,7 +45,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @access  Private
 const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
-    .populate('user', 'name email')
+    .populate('userId', 'name email text')
     .populate('restaurant', 'name');
 
   if (order) {
@@ -65,16 +66,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   if (order) {
     order.status = status || order.status;
     const updatedOrder = await order.save();
-
-    // Broadcast the status update to the user's specific room
-    const io = req.app.get('io');
-    if (io) {
-      io.to(updatedOrder.user.toString()).emit('orderStatusUpdated', {
-        orderId: updatedOrder._id,
-        status: updatedOrder.status,
-      });
-    }
-
     res.json(updatedOrder);
   } else {
     res.status(404);
@@ -103,17 +94,27 @@ const updateOrderPaymentStatus = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id }).populate('restaurant', 'name');
+  const orders = await Order.find({ userId: req.user._id }).populate('restaurant', 'name');
   res.json(orders);
 });
 
-// @desc    Get all orders
+// @desc    Get all orders (with RBAC)
 // @route   GET /api/orders
-// @access  Private/Admin
+// @access  Private/Admin or RestaurantOwner
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({})
-    .populate('user', 'id name')
-    .populate('restaurant', 'name');
+  let query = {};
+  
+  if (req.user.role === 'restaurant_owner') {
+    const restaurants = await Restaurant.find({ ownerId: req.user._id });
+    const restaurantIds = restaurants.map(r => r._id);
+    query = { restaurant: { $in: restaurantIds } };
+  } else if (req.user.role !== 'admin') {
+    query = { userId: req.user._id };
+  }
+
+  const orders = await Order.find(query)
+    .populate('userId', 'id name email')
+    .populate('restaurant', 'name address image');
   res.json(orders);
 });
 

@@ -8,6 +8,7 @@ const {
   deleteRestaurant,
   createRestaurantReview,
   getRestaurantReviews,
+  globalSearch,
 } = require('../controllers/restaurantController');
 const { protect, restaurantOwner } = require('../middleware/authMiddleware');
 
@@ -27,13 +28,33 @@ router.route('/')
     createRestaurant
   );
 
+router.route('/search')
+  .get(globalSearch);
+
 router.route('/:id')
   .get(getRestaurantById)
-  .put(protect, restaurantOwner, updateRestaurant)
+  .put(
+    protect, 
+    restaurantOwner, 
+    [
+      check('name', 'Name cannot be empty').optional().not().isEmpty(),
+      check('deliveryTime', 'Delivery time format is required').optional().not().isEmpty(),
+    ],
+    validate,
+    updateRestaurant
+  )
   .delete(protect, restaurantOwner, deleteRestaurant);
 
 router.route('/:id/reviews')
   .get(getRestaurantReviews)
-  .post(protect, createRestaurantReview);
+  .post(
+    protect,
+    [
+      check('rating', 'Rating must be between 1 and 5').isInt({ min: 1, max: 5 }),
+      check('comment', 'Comment is required').not().isEmpty(),
+    ],
+    validate,
+    createRestaurantReview
+  );
 
 module.exports = router;

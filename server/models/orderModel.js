@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
-  user: {
+const orderSchema = mongoose.Schema({
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User',
@@ -11,7 +12,7 @@ const orderSchema = mongoose.Schema({
     required: true,
     ref: 'Restaurant',
   },
-  orderItems: [
+  items: [
     {
       name: { type: String, required: true },
       quantity: { type: Number, required: true },
@@ -24,7 +25,7 @@ const orderSchema = mongoose.Schema({
       },
     },
   ],
-  shippingAddress: {
+  address: {
     address: { type: String, required: true },
     city: { type: String, required: true },
     postalCode: { type: String, required: true },
@@ -45,7 +46,7 @@ const orderSchema = mongoose.Schema({
     razorpayPaymentId: { type: String },
     razorpaySignature: { type: String },
   },
-  totalPrice: {
+  totalAmount: {
     type: Number,
     required: true,
     default: 0.0,
@@ -59,6 +60,11 @@ const orderSchema = mongoose.Schema({
 }, {
   timestamps: true,
 });
+
+// Optimization Indexes
+orderSchema.index({ userId: 1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ restaurant: 1 });
 
 const Order = mongoose.model('Order', orderSchema);
 

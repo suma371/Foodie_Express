@@ -2,15 +2,40 @@ const asyncHandler = require('express-async-handler');
 const FoodItem = require('../models/foodItemModel');
 const { mockFoodItems } = require('../data/mockFoodItems');
 
-// @desc    Get food items by restaurant
+// @desc    Get food items by restaurant with search and filtering
 // @route   GET /api/fooditems/restaurant/:restaurantId
 // @access  Public
 const getFoodItemsByRestaurant = asyncHandler(async (req, res) => {
+  const { restaurantId } = req.params;
+  const { keyword, category } = req.query;
+
+  const query = { restaurantId };
+  if (keyword) {
+    query.name = { $regex: keyword, $options: 'i' };
+  }
+  if (category) {
+    query.category = category;
+  }
+
   try {
-    const foodItems = await FoodItem.find({ restaurantId: req.params.restaurantId }).maxTimeMS(2000);
+    const foodItems = await FoodItem.find(query).maxTimeMS(2000);
+    
+    if (global.isOfflineMode || (foodItems.length === 0 && (keyword || category))) {
+      let filteredMocks = [...mockFoodItems];
+      if (keyword) {
+        filteredMocks = filteredMocks.filter(item => 
+          item.name.toLowerCase().includes(keyword.toLowerCase())
+        );
+      }
+      if (category) {
+        filteredMocks = filteredMocks.filter(item => item.category === category);
+      }
+      return res.json(filteredMocks);
+    }
+    
     res.json(foodItems.length > 0 ? foodItems : mockFoodItems);
   } catch (err) {
-    console.warn('DB error in foodItems, returning mocks');
+    console.warn('Food items query failed, returning mocks');
     res.json(mockFoodItems);
   }
 });
