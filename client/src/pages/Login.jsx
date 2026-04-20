@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, User, UtensilsCrossed } from 'lucide-react';
+import { Mail, Lock, ArrowRight, User, UtensilsCrossed, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import { useAuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   const { login } = useAuthContext();
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-gray-50">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-background">
       {/* Background Decor */}
       <div className="absolute inset-0 z-0">
           <img 
@@ -34,32 +35,32 @@ const Login = () => {
              className="w-full h-full object-cover scale-110 blur-xl opacity-20 grayscale" 
              alt="bg" 
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FF7043]/30 via-transparent to-[#F4511E]/10 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-primaryDark/10 mix-blend-multiply" />
       </div>
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-md bg-white rounded-[2.5rem] p-10 md:p-12 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-white/50 backdrop-blur-sm"
+        className="relative z-10 w-full max-w-md bg-card rounded-[2.5rem] p-10 md:p-12 shadow-card border border-border backdrop-blur-sm"
       >
         <div className="text-center mb-10">
-           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#FF7043] to-[#F4511E] text-white rounded-2xl shadow-[0_10px_25px_rgba(255,112,67,0.4)] mb-6 transform -rotate-6">
+           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-primaryDark text-white rounded-2xl shadow-[0_10px_25px_rgba(252,128,25,0.4)] mb-6 transform -rotate-6">
               <UtensilsCrossed size={32} />
            </div>
-           <h1 className="text-3xl font-heading font-black text-gray-900 tracking-tight">Welcome Back</h1>
-           <p className="text-gray-500 font-medium text-sm mt-3">Log in to your FoodieExpress account</p>
+           <h1 className="text-3xl font-black text-secondary tracking-tight">Welcome Back</h1>
+           <p className="text-muted font-medium text-sm mt-3">Log in to your FoodieExpress account</p>
         </div>
 
         <form onSubmit={submitHandler} className="space-y-5">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-700 ml-1">Email Address</label>
+            <label className="text-xs font-bold text-secondary ml-1">Email Address</label>
             <div className="relative group">
-              <Mail size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
+              <Mail size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
               <input
                 type="email"
                 required
-                className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm"
+                className="w-full bg-background border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 pl-12 pr-6 font-medium text-secondary outline-none transition-all shadow-sm"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -69,46 +70,54 @@ const Login = () => {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center ml-1">
-               <label className="text-xs font-bold text-gray-700">Password</label>
-               <button type="button" className="text-xs font-bold text-[#FF7043] hover:underline">Forgot?</button>
+               <label className="text-xs font-bold text-secondary">Password</label>
+               <button type="button" className="text-xs font-bold text-primary hover:underline">Forgot?</button>
             </div>
             <div className="relative group">
-              <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
+              <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm"
+                className="w-full bg-background border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 pl-12 pr-12 font-medium text-secondary outline-none transition-all shadow-sm"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-primary transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#FF7043] hover:bg-[#F4511E] text-white py-4 rounded-2xl font-bold shadow-[0_10px_25px_rgba(255,112,67,0.3)] flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 text-[15px] group mt-8"
+            className="w-full bg-primary hover:bg-primaryDark text-white py-4 rounded-lg font-bold shadow-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] text-[15px] group mt-8"
           >
             CONTINUE <ArrowRight size={20} strokeWidth={3} className="group-hover:translate-x-1.5 transition-transform" />
           </button>
         </form>
 
-        <div className="mt-10 pt-8 border-t border-gray-100 text-center">
-           <p className="text-xs font-medium text-gray-500 mb-6">Or connect with</p>
+        <div className="mt-10 pt-8 border-t border-border text-center">
+           <p className="text-xs font-medium text-muted mb-6">Or connect with</p>
            <div className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center gap-3 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all font-bold text-sm text-gray-700 shadow-sm border border-gray-100">
+              <button className="flex items-center justify-center gap-3 py-3.5 bg-background hover:bg-gray-200 rounded-xl transition-all font-bold text-sm text-secondary shadow-sm border border-border">
                  <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="G" /> Google
               </button>
-              <button className="flex items-center justify-center gap-3 py-3.5 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all font-bold text-sm text-gray-700 shadow-sm border border-gray-100">
+              <button className="flex items-center justify-center gap-3 py-3.5 bg-background hover:bg-gray-200 rounded-xl transition-all font-bold text-sm text-secondary shadow-sm border border-border">
                  <img src="https://www.facebook.com/favicon.ico" className="w-4 h-4" alt="F" /> Facebook
               </button>
            </div>
         </div>
 
         <div className="mt-10 text-center">
-          <p className="text-sm font-medium text-gray-500">
+          <p className="text-sm font-medium text-muted">
             New to FoodieExpress?{' '}
-            <Link to="/register" className="text-[#FF7043] font-bold hover:underline">
+            <Link to="/register" className="text-primary font-bold hover:underline">
               Create an account
             </Link>
           </p>

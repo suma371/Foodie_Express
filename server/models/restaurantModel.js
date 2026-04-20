@@ -20,7 +20,19 @@ const restaurantSchema = mongoose.Schema({
   image: {
     type: String,
   },
+  cuisine: {
+    type: [String],
+    default: ['Multicuisine'],
+  },
+  location: {
+    city: String,
+    area: String,
+  },
   rating: {
+    type: Number,
+    default: 0,
+  },
+  numReviews: {
     type: Number,
     default: 0,
   },

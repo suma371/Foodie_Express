@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import OrderTracking from './pages/OrderTracking';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminRoute from './components/auth/AdminRoute';
+import PrivateRoute from './components/auth/PrivateRoute';
 
 const Router = () => {
   return (
@@ -18,13 +19,18 @@ const Router = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/signup" element={<Register />} />
       <Route path="/restaurants" element={<RestaurantList />} />
       <Route path="/restaurant/:id" element={<RestaurantMenu />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/order-tracking/:id" element={<OrderTracking />} />
-      <Route path="/orders" element={<Orders />} />
-      <Route path="/profile" element={<Profile />} />
+      
+      {/* Protected User Routes */}
+      <Route element={<PrivateRoute />}>
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-tracking/:id" element={<OrderTracking />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
       
       {/* Protected Admin Routes */}
       <Route element={<AdminRoute />}>

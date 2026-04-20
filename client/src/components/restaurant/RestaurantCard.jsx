@@ -1,64 +1,54 @@
 import { Link } from 'react-router-dom';
 import { Star, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { scaleHover } from '../../utils/motion';
 
 const RestaurantCard = ({ restaurant }) => {
   return (
-    <Link to={`/restaurant/${restaurant._id}`} className="group block focus:outline-none focus:ring-2 focus:ring-primary rounded-[1.5rem]">
-      <div className="bg-card shadow-card overflow-hidden rounded-[1.5rem] border-transparent transition-all duration-300 hover:shadow-hover hover:-translate-y-1 h-full flex flex-col">
+    <Link to={`/restaurant/${restaurant._id}`} className="block">
+      <motion.div
+        whileHover={scaleHover.whileHover}
+        whileTap={scaleHover.whileTap}
+        className="bg-card rounded-xl overflow-hidden shadow-card hover:shadow-hover transition duration-200 cursor-pointer flex flex-col h-full border border-transparent hover:border-border"
+      >
         {/* Image */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-background">
-          <img
-            src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800'}
+        <div className="relative overflow-hidden h-40 w-full">
+          <img 
+            src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=800'} 
+            className="h-full w-full object-cover transition-transform duration-500" 
             alt={restaurant.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            loading="lazy"
           />
-          {/* Gradient + Offer */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 transform transition-transform duration-300">
-            <p className="text-white font-bold text-base leading-tight truncate drop-shadow-md">
-              {restaurant.offers?.[0] || '₹125 OFF ABOVE ₹249'}
-            </p>
-            <p className="text-white/80 text-[10px] font-bold tracking-wider uppercase mt-1">Special Edition</p>
+          {/* Time Overlay */}
+          <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded">
+             {restaurant.deliveryTime || '25-30'} MINS
           </div>
-          
-          {/* Promoted Badge */}
           {restaurant.isPromoted && (
-            <div className="absolute top-3 left-3 bg-white shadow-sm text-secondary text-[10px] font-bold px-2.5 py-1.5 rounded-full uppercase tracking-widest">
+            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-secondary text-[10px] font-bold px-2 py-1 rounded shadow-sm uppercase tracking-wide">
               Promoted
             </div>
           )}
-          
-          {/* Floating Rating */}
-          <div className={`absolute top-3 right-3 flex items-center gap-1 bg-rating text-white px-2 py-1.5 rounded-lg font-bold text-xs shadow-card`}>
-             <Star size={12} fill="currentColor" />
-             {restaurant.rating || '4.2'}
-          </div>
         </div>
-
+        
         {/* Info */}
-        <div className="p-4 flex-1 flex flex-col">
-          <div className="flex items-start justify-between gap-3 mb-1.5">
-             <h3 className="text-[17px] font-bold text-secondary truncate group-hover:text-primary transition-colors leading-tight">
-               {restaurant.name}
-             </h3>
-          </div>
-
-          <p className="text-sm text-muted font-medium truncate mb-3">
-            {restaurant.cuisines?.slice(0, 3).join(', ') || 'North Indian, Chinese'}
-          </p>
+        <div className="p-3 flex flex-col flex-1">
+          <h3 className="text-lg font-semibold text-secondary truncate">
+            {restaurant.name}
+          </h3>
           
-          <div className="mt-auto flex items-center justify-between pt-3 border-t border-border">
-             <div className="flex items-center gap-1.5 text-[13px] font-semibold text-muted bg-background px-2.5 py-1 rounded-lg">
-               <Clock size={14} className="text-primary" />
-               <span>{restaurant.deliveryTime || '25-30'} min</span>
-             </div>
-             <p className="text-[11px] text-muted font-bold uppercase tracking-wider">
-               {restaurant.address?.city || 'Downtown'}
-             </p>
+          <p className="text-sm text-muted truncate">
+            {restaurant.cuisines?.slice(0, 3).join(', ') || 'Various Cuisines'}
+          </p>
+
+          <div className="flex justify-between items-center mt-auto pt-3 text-sm">
+            <span className="bg-rating text-white px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1">
+              ⭐ {restaurant.rating || '4.2'}
+            </span>
+            <span className="text-muted font-medium">
+              ₹250 for two
+            </span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </Link>
   );
 };

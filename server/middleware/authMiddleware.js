@@ -11,6 +11,13 @@ const protect = asyncHandler(async (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      if (global.isOfflineMode) {
+        // In mock mode, we just trust the ID in the token and provide a minimal user object
+        req.user = { _id: decoded.userId, role: 'user' };
+        return next();
+      }
+
       req.user = await User.findById(decoded.userId).select('-password');
       next();
     } catch (error) {

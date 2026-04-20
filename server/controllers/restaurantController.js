@@ -3,16 +3,73 @@ const Restaurant = require('../models/restaurantModel');
 const Review = require('../models/reviewModel');
 const { mockRestaurants } = require('../data/mockRestaurants');
 
-// @desc    Get all restaurants
+// @desc    Get all restaurants with search, filter, and pagination
 // @route   GET /api/restaurants
 // @access  Public
 const getRestaurants = asyncHandler(async (req, res) => {
+  const pageSize = Number(req.query.pageSize) || 8;
+  const page = Number(req.query.pageNumber) || 1;
+
+  // Search keyword (fuzzy search on name)
+  const keyword = req.query.keyword
+    ? {
+        name: {
+          $regex: req.query.keyword,
+          $options: 'i',
+        },
+      }
+    : {};
+
+  // Cuisine filter
+  const cuisine = req.query.cuisine
+    ? {
+        cuisine: { $in: [req.query.cuisine] }
+      }
+    : {};
+
+  // Rating filter (minimum rating)
+  const minRating = req.query.minRating
+    ? {
+        rating: { $gte: Number(req.query.minRating) }
+      }
+    : {};
+
+  const query = { ...keyword, ...cuisine, ...minRating };
+
   try {
-    const restaurants = await Restaurant.find({}).maxTimeMS(2000); // 2s timeout
-    res.json(restaurants.length > 0 ? restaurants : mockRestaurants);
+    const count = await Restaurant.countDocuments(query).maxTimeMS(2000);
+    const restaurants = await Restaurant.find(query)
+      .limit(pageSize)
+      .skip(pageSize * (page - 1))
+      .maxTimeMS(2000);
+
+    // If DB is offline, we return mock results but apply search logic to them
+    if (global.isOfflineMode || restaurants.length === 0) {
+      let filteredMocks = [...mockRestaurants];
+      
+      if (req.query.keyword) {
+        filteredMocks = filteredMocks.filter(r => 
+          r.name.toLowerCase().includes(req.query.keyword.toLowerCase())
+        );
+      }
+      
+      return res.json({ 
+        restaurants: filteredMocks, 
+        page, 
+        pages: Math.ceil(filteredMocks.length / pageSize),
+        count: filteredMocks.length 
+      });
+    }
+
+    res.json({ restaurants, page, pages: Math.ceil(count / pageSize), count });
   } catch (err) {
-    console.warn('DB connection timed out, returning mock fallback');
-    res.json(mockRestaurants);
+    console.warn('Advanced query failed, returning mock fallback');
+    res.json({ 
+      restaurants: mockRestaurants, 
+      page: 1, 
+      pages: 1, 
+      count: mockRestaurants.length 
+    });
   }
 });
 
@@ -104,40 +161,46 @@ const deleteRestaurant = asyncHandler(async (req, res) => {
 const createRestaurantReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
 
+  if (!rating || rating < 1 || rating > 5) {
+    res.status(400);
+    throw new Error('Rating must be between 1 and 5');
+  }
+
   const restaurant = await Restaurant.findById(req.params.id);
 
-  if (restaurant) {
-    const alreadyReviewed = await Review.findOne({
-      user: req.user._id,
-      restaurant: req.params.id,
-    });
-
-    if (alreadyReviewed) {
-      res.status(400);
-      throw new Error('Restaurant already reviewed');
-    }
-
-    const review = new Review({
-      name: req.user.name,
-      rating: Number(rating),
-      comment,
-      user: req.user._id,
-      restaurant: req.params.id,
-    });
-
-    await review.save();
-
-    const reviews = await Review.find({ restaurant: req.params.id });
-
-    restaurant.rating =
-      reviews.reduce((acc, item) => item.rating + acc, 0) / reviews.length;
-
-    await restaurant.save();
-    res.status(201).json({ message: 'Review added' });
-  } else {
+  if (!restaurant) {
     res.status(404);
     throw new Error('Restaurant not found');
   }
+
+  const alreadyReviewed = await Review.findOne({
+    user: req.user._id,
+    restaurant: req.params.id,
+  });
+
+  if (alreadyReviewed) {
+    res.status(400);
+    throw new Error('You have already reviewed this restaurant');
+  }
+
+  const review = new Review({
+    name: req.user.name || 'Anonymous',
+    rating: Number(rating),
+    comment,
+    user: req.user._id,
+    restaurant: req.params.id,
+  });
+
+  await review.save();
+
+  // Recalculate average rating and review count
+  const allReviews = await Review.find({ restaurant: req.params.id });
+  restaurant.numReviews = allReviews.length;
+  restaurant.rating =
+    allReviews.reduce((acc, item) => item.rating + acc, 0) / allReviews.length;
+
+  await restaurant.save();
+  res.status(201).json({ message: 'Review added successfully', review });
 });
 
 // @desc    Get all reviews for a restaurant

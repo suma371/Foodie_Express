@@ -86,7 +86,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="bg-[#FAFAFA] min-h-screen py-10 sm:py-16">
+    <div className="bg-background min-h-screen py-10 sm:py-16">
       <div className="max-w-[850px] mx-auto px-6">
          <motion.div 
            initial={{ opacity: 0, y: 20 }}
@@ -94,11 +94,11 @@ const Profile = () => {
            className="flex flex-col gap-10"
          >
             {/* ── Header Section ── */}
-            <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col sm:flex-row items-center sm:items-start gap-8">
+            <div className="bg-card rounded-[2rem] p-8 sm:p-10 shadow-card border border-border flex flex-col sm:flex-row items-center sm:items-start gap-8">
                <div className="relative group shrink-0">
-                  <div className="w-32 h-32 rounded-[2rem] overflow-hidden shadow-lg border-4 border-white">
+                  <div className="w-32 h-32 rounded-[2rem] overflow-hidden shadow-lg border-4 border-card">
                     <img 
-                      src={`https://ui-avatars.com/api/?name=${user?.name}&background=FF7043&color=fff&size=256&bold=true`} 
+                      src={`https://ui-avatars.com/api/?name=${user?.name}&background=FC8019&color=fff&size=256&bold=true`} 
                       alt={user?.name}
                       className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
@@ -107,15 +107,15 @@ const Profile = () => {
 
                <div className="text-center sm:text-left flex flex-col gap-4 w-full">
                   <div className="flex items-center gap-3 justify-center sm:justify-start flex-wrap">
-                     <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-[10px] font-bold uppercase tracking-widest">Verified Account</span>
+                     <span className="px-3 py-1 bg-background text-muted rounded-lg text-[10px] font-bold uppercase tracking-widest border border-border">Verified Account</span>
                      {user?.role === 'restaurant_owner' && (
-                        <span className="px-3 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg text-[10px] font-bold uppercase tracking-widest">Restaurant Partner</span>
+                        <span className="px-3 py-1 bg-amber-50 text-rating border border-amber-200 rounded-lg text-[10px] font-bold uppercase tracking-widest">Restaurant Partner</span>
                      )}
                   </div>
                   <div>
-                    <h1 className="text-3xl sm:text-4xl font-heading font-black text-gray-900 tracking-tight capitalize mb-2">{user?.name}</h1>
-                    <p className="text-gray-500 font-bold flex items-center gap-2 justify-center sm:justify-start">
-                       <Mail size={16} className="text-gray-400" /> {user?.email}
+                    <h1 className="text-3xl sm:text-4xl font-black text-secondary tracking-tight capitalize mb-2">{user?.name}</h1>
+                    <p className="text-muted font-bold flex items-center gap-2 justify-center sm:justify-start">
+                       <Mail size={16} className="text-muted" /> {user?.email}
                     </p>
                   </div>
                </div>
@@ -125,32 +125,32 @@ const Profile = () => {
             <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                
                {/* Contact Details */}
-               <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 space-y-6">
-                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest pb-4 border-b border-gray-100">Contact Details</h3>
+               <div className="bg-card rounded-[2rem] p-8 sm:p-10 shadow-card border border-border space-y-6">
+                  <h3 className="text-sm font-bold text-muted uppercase tracking-widest pb-4 border-b border-border">Contact Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-700 ml-1">Full Name</label>
+                        <label className="text-xs font-bold text-secondary ml-1">Full Name</label>
                         <div className="relative group">
-                           <User size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
-                           <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="John Doe" required />
+                           <User size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
+                           <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-background border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 pl-12 pr-6 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="John Doe" required />
                         </div>
                      </div>
                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-700 ml-1">Phone Number</label>
+                        <label className="text-xs font-bold text-secondary ml-1">Phone Number</label>
                         <div className="relative group">
-                           <Phone size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
-                           <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="+91 98765 43210" />
+                           <Phone size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
+                           <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-background border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 pl-12 pr-6 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="+91 98765 43210" />
                         </div>
                      </div>
                   </div>
                </div>
 
                {/* Address Management */}
-               <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 space-y-8">
-                  <div className="flex justify-between items-center pb-4 border-b border-gray-100">
-                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Saved Addresses</h3>
+               <div className="bg-card rounded-[2rem] p-8 sm:p-10 shadow-card border border-border space-y-8">
+                  <div className="flex justify-between items-center pb-4 border-b border-border">
+                     <h3 className="text-sm font-bold text-muted uppercase tracking-widest">Saved Addresses</h3>
                      {!showAddAddress && (
-                        <button type="button" onClick={() => setShowAddAddress(true)} className="flex items-center gap-2 text-xs font-bold text-[#FF7043] bg-[#FF7043]/10 hover:bg-[#FF7043]/20 px-4 py-2 rounded-xl transition-colors uppercase tracking-widest">
+                        <button type="button" onClick={() => setShowAddAddress(true)} className="flex items-center gap-2 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-xl transition-colors uppercase tracking-widest">
                            <Plus size={16} /> Add New
                         </button>
                      )}
@@ -164,41 +164,41 @@ const Profile = () => {
                          exit={{ height: 0, opacity: 0 }}
                          className="overflow-hidden"
                        >
-                         <div className="bg-gray-50 p-6 sm:p-8 rounded-[1.5rem] border border-gray-200 space-y-6 mb-8">
-                            <h4 className="text-sm font-bold text-gray-900">Add New Address</h4>
+                         <div className="bg-background p-6 sm:p-8 rounded-[1.5rem] border border-border space-y-6 mb-8">
+                            <h4 className="text-sm font-bold text-secondary">Add New Address</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                <div className="space-y-2">
-                                  <label className="text-xs font-bold text-gray-700 ml-1">Address Type</label>
-                                  <select name="type" value={newAddress.type} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm">
+                                  <label className="text-xs font-bold text-secondary ml-1">Address Type</label>
+                                  <select name="type" value={newAddress.type} onChange={handleAddressChange} className="w-full bg-card border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 px-5 font-medium text-secondary outline-none transition-all shadow-sm">
                                      <option value="Home">Home</option>
                                      <option value="Work">Work</option>
                                      <option value="Other">Other</option>
                                   </select>
                                </div>
                                <div className="space-y-2">
-                                  <label className="text-xs font-bold text-gray-700 ml-1">Phone (Optional)</label>
-                                  <input type="text" name="phone" value={newAddress.phone} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="Receiver's Phone" />
+                                  <label className="text-xs font-bold text-secondary ml-1">Phone (Optional)</label>
+                                  <input type="text" name="phone" value={newAddress.phone} onChange={handleAddressChange} className="w-full bg-card border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 px-5 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="Receiver's Phone" />
                                </div>
                                <div className="md:col-span-2 space-y-2">
-                                  <label className="text-xs font-bold text-gray-700 ml-1">Street Address</label>
-                                  <textarea name="street" value={newAddress.street} onChange={handleAddressChange} rows="2" className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm resize-none" placeholder="Door number, street name, landmarks..."></textarea>
+                                  <label className="text-xs font-bold text-secondary ml-1">Street Address</label>
+                                  <textarea name="street" value={newAddress.street} onChange={handleAddressChange} rows="2" className="w-full bg-card border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 px-5 font-medium text-secondary outline-none transition-all shadow-sm resize-none" placeholder="Door number, street name, landmarks..."></textarea>
                                </div>
                                <div className="space-y-2">
-                                  <label className="text-xs font-bold text-gray-700 ml-1">City</label>
-                                  <input type="text" name="city" value={newAddress.city} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="City" />
+                                  <label className="text-xs font-bold text-secondary ml-1">City</label>
+                                  <input type="text" name="city" value={newAddress.city} onChange={handleAddressChange} className="w-full bg-card border border-border focus:border-primary/40 focus:bg-card rounded-2xl py-4 px-5 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="City" />
                                </div>
                                <div className="space-y-2">
-                                  <label className="text-xs font-bold text-gray-700 ml-1">Postal Code</label>
-                                  <input type="text" name="postalCode" value={newAddress.postalCode} onChange={handleAddressChange} className="w-full bg-white border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 px-5 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="ZIP/Postal Code" />
+                                  <label className="text-xs font-bold text-secondary ml-1">Postal Code</label>
+                                  <input type="text" name="postalCode" value={newAddress.postalCode} onChange={handleAddressChange} className="w-full bg-card border border-border focus:border-primary/40 focus:bg-card rounded-2xl py-4 px-5 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="ZIP/Postal Code" />
                                </div>
                                <div className="md:col-span-2 flex items-center gap-3 pt-2">
-                                  <input type="checkbox" id="isDefault" name="isDefault" checked={newAddress.isDefault} onChange={handleAddressChange} className="w-5 h-5 rounded accent-[#FF7043]" />
-                                  <label htmlFor="isDefault" className="text-sm font-bold text-gray-600 cursor-pointer">Make this my default address</label>
+                                  <input type="checkbox" id="isDefault" name="isDefault" checked={newAddress.isDefault} onChange={handleAddressChange} className="w-5 h-5 rounded accent-primary" />
+                                  <label htmlFor="isDefault" className="text-sm font-bold text-muted cursor-pointer">Make this my default address</label>
                                </div>
                             </div>
-                            <div className="flex gap-4 justify-end mt-4 pt-4 border-t border-gray-200/60">
-                               <button type="button" onClick={() => setShowAddAddress(false)} className="px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold text-sm rounded-xl hover:bg-gray-50 transition-colors">CANCEL</button>
-                               <button type="button" onClick={addAddress} className="px-6 py-3 bg-[#FF7043] text-white font-bold text-sm rounded-xl hover:bg-[#F4511E] transition-colors shadow-md shadow-[#FF7043]/20">SAVE ADDRESS</button>
+                            <div className="flex gap-4 justify-end mt-4 pt-4 border-t border-border">
+                               <button type="button" onClick={() => setShowAddAddress(false)} className="px-6 py-3 bg-card border border-border text-muted font-bold text-sm rounded-xl hover:bg-background transition-colors">CANCEL</button>
+                               <button type="button" onClick={addAddress} className="bg-primary hover:bg-primaryDark text-white font-medium px-6 py-3 rounded-lg transition text-sm shadow-lg">SAVE ADDRESS</button>
                             </div>
                          </div>
                        </motion.div>
@@ -207,52 +207,52 @@ const Profile = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                      {addresses.length > 0 ? addresses.map((addr, idx) => (
-                        <div key={idx} className={`p-6 rounded-[1.5rem] border-2 relative bg-white transition-all ${addr.isDefault ? 'border-[#FF7043] shadow-md shadow-[#FF7043]/10' : 'border-gray-100'}`}>
+                        <div key={idx} className={`p-6 rounded-[1.5rem] border-2 relative bg-card transition-all ${addr.isDefault ? 'border-primary shadow-md shadow-primary/10' : 'border-border'}`}>
                            {addr.isDefault && (
-                              <span className="absolute -top-3 right-6 bg-[#FF7043] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">Default</span>
+                              <span className="absolute -top-3 right-6 bg-primary text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">Default</span>
                            )}
                            <div className="flex items-center gap-4 mb-4">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${addr.isDefault ? 'bg-[#FF7043]' : 'bg-gray-900'}`}>
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${addr.isDefault ? 'bg-primary' : 'bg-secondary'}`}>
                                  {getAddressIcon(addr.type)}
                               </div>
-                              <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">{addr.type}</h4>
+                              <h4 className="text-sm font-bold text-secondary uppercase tracking-widest">{addr.type}</h4>
                            </div>
-                           <p className="text-gray-900 font-bold text-base leading-tight mb-2 pr-4">{addr.street}</p>
-                           <p className="text-gray-500 text-sm font-medium">{addr.city}, {addr.postalCode}</p>
-                           {addr.phone && <p className="text-gray-500 text-sm font-medium mt-1 flex items-center gap-1.5"><Phone size={14}/>{addr.phone}</p>}
+                           <p className="text-secondary font-bold text-base leading-tight mb-2 pr-4">{addr.street}</p>
+                           <p className="text-muted text-sm font-medium">{addr.city}, {addr.postalCode}</p>
+                           {addr.phone && <p className="text-muted text-sm font-medium mt-1 flex items-center gap-1.5"><Phone size={14}/>{addr.phone}</p>}
                            
-                           <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                           <div className="flex justify-between items-center mt-6 pt-4 border-t border-border">
                               {!addr.isDefault ? (
                                  <button type="button" onClick={() => setAsDefault(idx)} className="text-xs font-bold text-blue-500 hover:text-blue-600 uppercase tracking-widest">Set Default</button>
                               ) : <div></div>}
-                              <button type="button" onClick={() => removeAddress(idx)} className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg"><Trash2 size={16} /> Remove</button>
+                              <button type="button" onClick={() => removeAddress(idx)} className="flex items-center gap-1.5 text-xs font-bold text-danger hover:text-red-600 uppercase tracking-widest bg-red-50 px-3 py-1.5 rounded-lg"><Trash2 size={16} /> Remove</button>
                            </div>
                         </div>
                      )) : (
-                        <div className="sm:col-span-2 text-center p-12 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
+                        <div className="sm:col-span-2 text-center p-12 bg-background rounded-[2rem] border-2 border-dashed border-border">
                            <MapPin size={40} className="mx-auto text-gray-300 mb-4" />
-                           <p className="text-gray-500 font-bold text-sm">No addresses saved yet. Add one to checkout faster!</p>
+                           <p className="text-muted font-bold text-sm">No addresses saved yet. Add one to checkout faster!</p>
                         </div>
                      )}
                   </div>
                </div>
 
                {/* Security */}
-               <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 space-y-6">
-                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest pb-4 border-b border-gray-100">Security</h3>
+               <div className="bg-card rounded-[2rem] p-8 sm:p-10 shadow-card border border-border space-y-6">
+                  <h3 className="text-sm font-bold text-muted uppercase tracking-widest pb-4 border-b border-border">Security</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-700 ml-1">New Password</label>
+                        <label className="text-xs font-bold text-secondary ml-1">New Password</label>
                         <div className="relative group">
-                           <Shield size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
-                           <input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="Leave blank to keep current" />
+                           <Shield size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
+                           <input type="password" name="password" value={formData.password} onChange={handleChange} className="w-full bg-background border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 pl-12 pr-6 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="Leave blank to keep current" />
                         </div>
                      </div>
                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-gray-700 ml-1">Confirm New Password</label>
+                        <label className="text-xs font-bold text-secondary ml-1">Confirm New Password</label>
                         <div className="relative group">
-                           <Shield size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#FF7043] transition-colors" />
-                           <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 focus:border-[#FF7043]/30 focus:bg-white rounded-2xl py-4 pl-12 pr-6 font-medium text-gray-900 outline-none transition-all shadow-sm" placeholder="••••••••" />
+                           <Shield size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" />
+                           <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full bg-background border border-border focus:border-primary/30 focus:bg-card rounded-2xl py-4 pl-12 pr-6 font-medium text-secondary outline-none transition-all shadow-sm" placeholder="••••••••" />
                         </div>
                      </div>
                   </div>
@@ -262,7 +262,7 @@ const Profile = () => {
                   <button
                      type="submit"
                      disabled={loading}
-                     className="bg-[#10B981] hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all shadow-[0_8px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:hover:translate-y-0"
+                     className="bg-primary hover:bg-primaryDark text-white font-medium px-8 py-4 rounded-lg transition shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:hover:translate-y-0 text-sm uppercase tracking-widest"
                   >
                      {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                      SAVE ALL CHANGES
@@ -271,7 +271,7 @@ const Profile = () => {
             </form>
 
             <div className="flex justify-center -mt-2 pb-6">
-               <Link to="/" className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors text-xs font-bold uppercase tracking-widest">
+               <Link to="/" className="flex items-center gap-2 text-muted hover:text-secondary transition-colors text-xs font-bold uppercase tracking-widest">
                   <ArrowLeft size={16} /> Back to Homepage
                </Link>
             </div>
