@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Loader2, X, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import RestaurantCard from '../components/restaurant/RestaurantCard';
 import PageWrapper from '../components/layout/PageWrapper';
