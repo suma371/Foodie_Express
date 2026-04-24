@@ -288,9 +288,3 @@ const Cart = () => {
 };
 
 export default Cart;
- </AnimatePresence>
-    </div>
-  );
-};
-
-export default Cart;
