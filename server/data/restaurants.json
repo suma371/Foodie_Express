@@ -68,5 +68,75 @@
     "address": "7 Temple Road, Southern Cross",
     "image": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?q=80&w=2070&auto=format&fit=crop",
     "rating": 4.8
+  },
+  {
+    "name": "The Great Greek",
+    "description": "Hearty Greek gyros, souvlaki, and fresh feta salads in a lively setting.",
+    "address": "101 Olympus Drive, West End",
+    "image": "https://images.unsplash.com/photo-1528650774211-f1110fc9ac96?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.5
+  },
+  {
+    "name": "Le Petit Bistro",
+    "description": "Classic French cuisine featuring escargot, coq au vin, and delicate crepes.",
+    "address": "40 Champs Avenue, Park Ridge",
+    "image": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.7
+  },
+  {
+    "name": "Mumbai Street Bites",
+    "description": "Authentic street food from Mumbai, featuring pav bhaji, vada pav, and chaats.",
+    "address": "12 Chowpatty Lane, Eastside",
+    "image": "https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.3
+  },
+  {
+    "name": "Seoul Kitchen",
+    "description": "Sizzling Korean BBQ, spicy tteokbokki, and comforting bibimbap.",
+    "address": "88 Gangnam Street, North Market",
+    "image": "https://images.unsplash.com/photo-1580651315530-69c8e0026377?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.6
+  },
+  {
+    "name": "Vegan Vibe Café",
+    "description": "100% plant-based sandwiches, smoothie bowls, and gluten-free pastries.",
+    "address": "22 Earth Way, Eco District",
+    "image": "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.9
+  },
+  {
+    "name": "Texas Smokehouse",
+    "description": "Slow-smoked briskets, ribs, and pulled pork with classic southern sides.",
+    "address": "300 BBQ Road, South Highway",
+    "image": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.4
+  },
+  {
+    "name": "Noodle Nirvana",
+    "description": "Hand-pulled noodles, rich broths, and authentic dumplings from all over Asia.",
+    "address": "8 Wonton Way, Chinatown",
+    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.5
+  },
+  {
+    "name": "Pancake Parlour",
+    "description": "Fluffy stacks of pancakes, waffles, and all-day breakfast classics.",
+    "address": "15 Maple Street, Downtown",
+    "image": "https://images.unsplash.com/photo-1506084868230-bb9d95c24759?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.2
+  },
+  {
+    "name": "Gelato Haven",
+    "description": "Artisanal Italian gelato made fresh daily with organic ingredients.",
+    "address": "10 Sweet Corner, Bay Area",
+    "image": "https://images.unsplash.com/photo-1570197781417-0a82375c9371?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.8
+  },
+  {
+    "name": "Middle Eastern Oasis",
+    "description": "Rich shawarmas, creamy hummus, and freshly baked pita directly from the oven.",
+    "address": "77 Casbah Road, Heritage Square",
+    "image": "https://images.unsplash.com/photo-1529928520614-7c76e2d99740?q=80&w=2070&auto=format&fit=crop",
+    "rating": 4.6
   }
 ]
