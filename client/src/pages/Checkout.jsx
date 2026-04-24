@@ -137,17 +137,11 @@ const Checkout = () => {
     setLoading(true);
     try {
       const payload = {
-        items: cartItems.map(item => ({
-          foodItem: item._id || item.foodItemId,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image,
-        })),
-        restaurant: cartItems[0]?.restaurantId || cartItems[0]?.restaurant?._id,
-        address: shippingAddress,
+        orderItems: cartItems,
+        restaurant: cartItems[0].restaurantId || cartItems[0].restaurant?._id,
+        shippingAddress,
         paymentMethod,
-        totalAmount: parseFloat(total.toFixed(2)),
+        totalPrice: total,
         paymentStatus,
         paymentDetails,
       };
@@ -395,6 +389,10 @@ const Checkout = () => {
       </div>
     </PageWrapper>
   );
+};
+
+export default Checkout;
+);
 };
 
 export default Checkout;

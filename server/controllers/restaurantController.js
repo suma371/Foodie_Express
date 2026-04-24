@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Restaurant = require('../models/restaurantModel');
-const FoodItem = require('../models/foodItemModel');
 const Review = require('../models/reviewModel');
+const FoodItem = require('../models/foodItemModel');
 const { mockRestaurants } = require('../data/mockRestaurants');
 
 // @desc    Get all restaurants with search, filter, and pagination
@@ -213,48 +213,33 @@ const getRestaurantReviews = asyncHandler(async (req, res) => {
   res.json(reviews);
 });
 
-// @desc    Global Search (Unified Restaurants and Dishes)
-// @route   GET /api/restaurants/search
+// @desc    Global search across restaurants and dishes
+// @route   GET /api/search
 // @access  Public
 const globalSearch = asyncHandler(async (req, res) => {
-  const { query } = req.query;
-
-  if (!query || query.length < 2) {
+  const { q } = req.query;
+  
+  if (!q) {
     return res.json({ restaurants: [], dishes: [] });
   }
 
-  // Define regex for fuzzy matching
-  const regex = { $regex: query, $options: 'i' };
+  const regex = new RegExp(q, 'i');
 
-  // Parallel searching for better performance
-  const [restaurants, dishes] = await Promise.all([
-    Restaurant.find({
-      $or: [
-        { name: regex },
-        { cuisine: { $in: [new RegExp(query, 'i')] } },
-        { "location.area": regex },
-      ]
-    }).limit(10).maxTimeMS(1000),
+  try {
+    const restaurants = await Restaurant.find({
+      $or: [{ name: regex }, { cuisine: regex }]
+    }).limit(10).maxTimeMS(2000);
 
-    FoodItem.find({
-      $or: [
-        { name: regex },
-        { category: regex },
-      ]
-    })
-    .populate('restaurantId', 'name image rating deliveryTime')
-    .limit(20)
-    .maxTimeMS(1000)
-  ]);
+    const dishes = await FoodItem.find({
+      $or: [{ name: regex }, { category: regex }]
+    }).populate('restaurantId', 'name image location rating deliveryTime')
+      .limit(20).maxTimeMS(2000);
 
-  // If DB results are thin, we can inject logic here or return mocks for development
-  res.json({
-    restaurants,
-    dishes: dishes.map(d => ({
-      ...d._doc,
-      restaurant: d.restaurantId // Map for frontend convenience
-    }))
-  });
+    res.json({ restaurants, dishes });
+  } catch (err) {
+    console.error('Search error:', err);
+    res.json({ restaurants: [], dishes: [] });
+  }
 });
 
 module.exports = {
@@ -267,3 +252,4 @@ module.exports = {
   getRestaurantReviews,
   globalSearch,
 };
+

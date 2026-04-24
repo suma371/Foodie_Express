@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Loader2, X, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import RestaurantCard from '../components/restaurant/RestaurantCard';
 import PageWrapper from '../components/layout/PageWrapper';
@@ -14,6 +14,7 @@ const Home = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [keyword, setKeyword] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [minRating, setMinRating] = useState(0);
   
@@ -49,6 +50,7 @@ const Home = () => {
       const { data } = await api.get(`/restaurants`, {
         params: {
           pageNumber: pageNum,
+          keyword,
           cuisine: cuisine,
           minRating: minRating > 0 ? minRating : undefined,
           pageSize: 8
@@ -74,6 +76,16 @@ const Home = () => {
     fetchRestaurants(1, true);
   }, [cuisine, minRating]);
 
+  // Trigger on search (manual submit or enter)
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if(keyword.trim()) {
+      navigate(`/search?q=${encodeURIComponent(keyword)}`);
+    } else {
+      navigate('/search');
+    }
+  };
+
   // Trigger on Infinite Scroll page increment
   useEffect(() => {
     if (page > 1) {
@@ -82,6 +94,7 @@ const Home = () => {
   }, [page]);
 
   const resetFilters = () => {
+    setKeyword('');
     setCuisine('');
     setMinRating(0);
     setPage(1);
@@ -92,20 +105,23 @@ const Home = () => {
       <div className="bg-background min-h-screen">
         <div className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16 py-8 sm:py-12">
 
-          {/* ── Section 1: Categories ── */}
+          {/* ── Section 1: Search & Categories ── */}
           <section className="mb-14 sm:mb-16">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <h2 className="text-2xl sm:text-[28px] font-black text-secondary tracking-tight">
                 What's on your mind?
               </h2>
               
-              <Link to="/search" className="relative group w-full md:max-w-md cursor-text">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-hover:text-primary transition-colors" size={20} />
-                <div className="w-full bg-card border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold transition-all shadow-sm flex items-center text-muted/60">
-                   Search for restaurants or food...
-                </div>
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
-              </Link>
+              <form onSubmit={handleSearch} className="relative group w-full md:max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-focus-within:text-primary transition-colors" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search for restaurants or food..."
+                  className="w-full bg-card border border-border focus:outline-none focus:ring-2 focus:ring-primary rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold transition-all shadow-sm"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                />
+              </form>
             </div>
 
             <div className="flex gap-5 sm:gap-8 overflow-x-auto no-scrollbar pb-6 -mx-5 px-5 sm:mx-0 sm:px-0 scroll-smooth">
@@ -138,7 +154,7 @@ const Home = () => {
                 {cuisine ? `${cuisine} Spots` : 'Top restaurant chains'}
               </h2>
               
-              {(cuisine || minRating > 0) && (
+              {(cuisine || minRating > 0 || keyword) && (
                 <button 
                   onClick={resetFilters}
                   className="flex items-center gap-2 text-xs font-bold text-primary hover:text-primaryDark transition-colors"

@@ -115,7 +115,7 @@ const Orders = () => {
                             </div>
                          </div>
                          <div className="text-left sm:text-right flex flex-col items-start sm:items-end w-full sm:w-auto mt-4 sm:mt-0">
-                            <span className="text-2xl font-black text-secondary mb-2">₹{(order.totalAmount || 0).toFixed(0)}</span>
+                            <span className="text-2xl font-black text-secondary mb-2">₹{order.totalPrice.toFixed(0)}</span>
                             <div className="flex items-center gap-2 bg-green-50 text-accent px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-green-100">
                                Success • Paid
                             </div>
@@ -161,7 +161,7 @@ const Orders = () => {
                          <div className="flex items-center flex-wrap gap-4 text-muted text-xs font-semibold">
                             <span className="flex items-center gap-1.5"><Clock size={16} /> {new Date(order.createdAt).toLocaleDateString()}</span>
                             <span className="w-1 h-1 rounded-full bg-border"></span>
-                            <span className="flex items-center gap-1.5"><MapPin size={16} /> {order.address?.city || 'Your Location'}</span>
+                            <span className="flex items-center gap-1.5"><MapPin size={16} /> {order.shippingAddress.city}</span>
                          </div>
                          <div className="flex items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                             {!isDelivered && (
@@ -191,7 +191,7 @@ const Orders = () => {
                                   <div className="bg-background rounded-2xl p-6">
                                      <h4 className="text-xs font-bold text-muted uppercase tracking-widest mb-4">Order Items</h4>
                                      <div className="space-y-4">
-                                        {(order.items || []).map((item, idx) => (
+                                        {order.orderItems.map((item, idx) => (
                                            <div key={idx} className="flex justify-between items-center text-sm">
                                               <div className="flex items-center gap-3">
                                                  <span className="font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-lg">{item.quantity}x</span>
@@ -204,7 +204,7 @@ const Orders = () => {
                                      <div className="h-px bg-border my-4" />
                                      <div className="flex justify-between items-start">
                                         <span className="text-xs font-bold text-muted uppercase tracking-widest">Delivery Address</span>
-                                        <span className="text-sm font-semibold text-secondary max-w-[200px] text-right">{order.address?.address || order.address || 'N/A'}</span>
+                                        <span className="text-sm font-semibold text-secondary max-w-[200px] text-right">{order.shippingAddress.address}</span>
                                      </div>
                                   </div>
                                 </div>

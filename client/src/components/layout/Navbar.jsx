@@ -20,7 +20,6 @@ const Navbar = () => {
 
   const navLinks = [
     { to: '/', icon: <HomeIcon size={22} />, label: 'Home' },
-    { to: '/search', icon: <Search size={22} />, label: 'Search' },
     { to: '/cart', icon: <ShoppingCart size={22} />, label: 'Cart', badge: cartCount },
     { to: user ? '/orders' : '/login', icon: <ListOrdered size={22} />, label: 'Orders' },
     { to: user ? '/profile' : '/login', icon: <User size={22} />, label: user ? 'Account' : 'Login' },
@@ -61,13 +60,11 @@ const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-4 md:gap-10">
-            <Link 
-              to="/search" 
-              className="hidden md:flex items-center gap-2 relative group account-nav border border-transparent hover:border-primary/20 bg-background hover:bg-white rounded-2xl py-2.5 pl-12 pr-6 w-[250px] lg:w-[350px] transition-all overflow-hidden"
-            >
+            <Link to="/search" className="hidden md:flex items-center gap-2 relative group account-nav cursor-text">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted group-hover:text-primary transition-colors" size={18} />
-               <span className="text-sm font-bold text-muted/60">Search for 'Sushi'...</span>
-               <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="bg-background border border-transparent group-hover:border-primary/20 group-hover:bg-white rounded-2xl py-2.5 pl-12 pr-6 text-sm font-bold text-muted w-[250px] lg:w-[350px] transition-all flex items-center">
+                 Search for 'Sushi'...
+               </div>
             </Link>
 
             <div className="flex items-center gap-2 md:gap-8">

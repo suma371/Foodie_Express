@@ -13,9 +13,9 @@ const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Orders = lazy(() => import('./pages/Orders'));
 const Profile = lazy(() => import('./pages/Profile'));
+const Search = lazy(() => import('./pages/Search'));
 const OrderTracking = lazy(() => import('./pages/OrderTracking'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const Search = lazy(() => import('./pages/Search'));
 
 // Premium Suspense Fallback
 const PageLoader = () => (
@@ -39,8 +39,8 @@ const Router = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/signup" element={<Register />} />
         <Route path="/restaurants" element={<RestaurantList />} />
-        <Route path="/restaurant/:id" element={<RestaurantMenu />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/restaurant/:id" element={<RestaurantMenu />} />
         
         {/* Protected User Routes */}
         <Route element={<PrivateRoute />}>

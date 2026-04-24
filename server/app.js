@@ -32,6 +32,9 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to FoodieExpress API. Use specific endpoints like /api/restaurants or /api/users.' });
 });
 
+// Global Search
+app.get('/api/search', require('./controllers/restaurantController').globalSearch);
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/restaurants', restaurantRoutes);

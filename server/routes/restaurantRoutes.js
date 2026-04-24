@@ -8,7 +8,6 @@ const {
   deleteRestaurant,
   createRestaurantReview,
   getRestaurantReviews,
-  globalSearch,
 } = require('../controllers/restaurantController');
 const { protect, restaurantOwner } = require('../middleware/authMiddleware');
 
@@ -27,9 +26,6 @@ router.route('/')
     validate,
     createRestaurant
   );
-
-router.route('/search')
-  .get(globalSearch);
 
 router.route('/:id')
   .get(getRestaurantById)
